@@ -208,9 +208,13 @@ export default function SignupPage() {
     password: '',
     confirmPassword: '',
     specialization: '',
-    licenseNumber: ''
+    licenseNumber: '',
+    experience: '',
+    consultationFee: ''
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const router = useRouter()
 
@@ -218,18 +222,58 @@ export default function SignupPage() {
     e.preventDefault()
 
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match')
+      setError('Passwords do not match')
       return
     }
 
     setIsLoading(true)
+    setError('')
 
-    console.log('Signup attempt:', { ...formData, userType })
+    try {
+      const userData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        dateOfBirth: formData.dateOfBirth,
+        password: formData.password,
+        userType,
+        ...(userType === 'doctor' && {
+          specialization: formData.specialization,
+          licenseNumber: formData.licenseNumber,
+          experience: parseInt(formData.experience) || 0,
+          consultationFee: parseInt(formData.consultationFee) || 0
+        })
+      }
 
-    setTimeout(() => {
+      const response = await fetch('http://localhost:8080/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        // Show success message instead of immediate login
+        setShowSuccess(true)
+        setIsLoading(false)
+        
+        // After 3 seconds, redirect to login
+        setTimeout(() => {
+          router.push('/auth/login')
+        }, 3000)
+      } else {
+        setError(result.error || 'Registration failed. Please try again.')
+        setIsLoading(false)
+      }
+    } catch (err: any) {
+      console.error('Signup error:', err)
+      setError('Registration failed. Please check your connection and try again.')
       setIsLoading(false)
-      router.push('/auth/login')
-    }, 2000)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -307,7 +351,39 @@ export default function SignupPage() {
             </div>
 
             <div className="p-8">
-              {/* User Type Selection */}
+              {showSuccess ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Account Created Successfully!</h3>
+                  <p className="text-gray-600 mb-4">
+                    Your {userType === 'doctor' ? 'doctor' : 'patient'} account has been created successfully.
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Redirecting to login page in <span className="font-medium text-green-600">3 seconds</span>...
+                  </p>
+                  <div className="mt-6">
+                    <div className="inline-flex items-center text-sm text-green-600">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Preparing your login...
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm">{error}</p>
+                    </div>
+                  )}
+
+                  {/* User Type Selection */}
               <div className="mb-8">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   I am a:
@@ -477,6 +553,41 @@ export default function SignupPage() {
                         placeholder="Enter your medical license number"
                       />
                     </div>
+
+                    <div>
+                      <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
+                        Years of Experience
+                      </label>
+                      <input
+                        id="experience"
+                        name="experience"
+                        type="number"
+                        min="0"
+                        max="50"
+                        required
+                        value={formData.experience}
+                        onChange={handleChange}
+                        className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+                        placeholder="Years of experience"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="consultationFee" className="block text-sm font-medium text-gray-700 mb-2">
+                        Consultation Fee ($)
+                      </label>
+                      <input
+                        id="consultationFee"
+                        name="consultationFee"
+                        type="number"
+                        min="0"
+                        required
+                        value={formData.consultationFee}
+                        onChange={handleChange}
+                        className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+                        placeholder="Consultation fee"
+                      />
+                    </div>
                   </>
                 )}
 
@@ -583,6 +694,8 @@ export default function SignupPage() {
                   </Link>
                 </p>
               </div>
+            </>
+              )}
             </div>
           </div>
         </div>

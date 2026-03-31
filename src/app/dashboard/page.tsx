@@ -20,17 +20,19 @@ export default function DashboardPage() {
           return
         }
 
-        // Mock role check - in real app, decode JWT or call API
-        const mockUserRole = 'patient' // This would come from token/API
+        // Get user role from localStorage
+        const userStr = localStorage.getItem('user')
+        const user = userStr ? JSON.parse(userStr) : null
+        const userRole = user?.userType || 'patient'
         
-        setUserRole(mockUserRole)
+        setUserRole(userRole)
         
         // Redirect to appropriate dashboard
-        if (mockUserRole === 'patient') {
+        if (userRole === 'patient') {
           router.push('/dashboard/patient')
-        } else if (mockUserRole === 'doctor') {
+        } else if (userRole === 'doctor') {
           router.push('/dashboard/doctor')
-        } else if (mockUserRole === 'admin') {
+        } else if (userRole === 'admin') {
           router.push('/dashboard/admin')
         }
       } catch (error) {

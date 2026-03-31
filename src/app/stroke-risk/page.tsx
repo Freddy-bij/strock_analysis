@@ -39,6 +39,7 @@ export default function StrokeRiskAssessmentPage() {
   })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Partial<HealthData>>({})
+  const [error, setError] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [authLoading, setAuthLoading] = useState(true)
   const router = useRouter()
@@ -109,12 +110,32 @@ export default function StrokeRiskAssessmentPage() {
 
     setLoading(true)
     
-    // Simulate API call for risk calculation
-    setTimeout(() => {
-      // Store data in sessionStorage for results page
-      sessionStorage.setItem('strokeRiskData', JSON.stringify(healthData))
-      router.push('/stroke-risk/results')
-    }, 1500)
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('http://localhost:8080/api/stroke-risk/calculate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(healthData)
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        // Store results for the results page
+        sessionStorage.setItem('strokeRiskResults', JSON.stringify(result.data))
+        router.push('/stroke-risk/results')
+      } else {
+        setError('Failed to calculate risk. Please try again.')
+      }
+    } catch (err: any) {
+      console.error('Risk calculation error:', err)
+      setError('Failed to calculate risk. Please check your connection and try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleInputChange = (field: keyof HealthData, value: string) => {
@@ -184,7 +205,7 @@ export default function StrokeRiskAssessmentPage() {
                   type="number"
                   value={healthData.age}
                   onChange={(e) => handleInputChange('age', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500"
+                  className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500"
                   placeholder="Enter your age"
                   min="30"
                   max="120"
@@ -206,7 +227,7 @@ export default function StrokeRiskAssessmentPage() {
                   step="0.1"
                   value={healthData.bmi}
                   onChange={(e) => handleInputChange('bmi', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500"
+                  className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500"
                   placeholder="Enter your BMI"
                   min="10"
                   max="50"
@@ -231,7 +252,7 @@ export default function StrokeRiskAssessmentPage() {
                     type="number"
                     value={healthData.systolicBP}
                     onChange={(e) => handleInputChange('systolicBP', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500"
+                    className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500"
                     placeholder="Systolic (upper number)"
                     min="70"
                     max="250"
@@ -248,7 +269,7 @@ export default function StrokeRiskAssessmentPage() {
                     type="number"
                     value={healthData.diastolicBP}
                     onChange={(e) => handleInputChange('diastolicBP', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500"
+                    className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500"
                     placeholder="Diastolic (lower number)"
                     min="40"
                     max="150"
@@ -294,7 +315,7 @@ export default function StrokeRiskAssessmentPage() {
                 <select
                   value={healthData.diabetesStatus}
                   onChange={(e) => handleInputChange('diabetesStatus', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="">Select status</option>
                   <option value="no">No diabetes</option>
@@ -319,7 +340,7 @@ export default function StrokeRiskAssessmentPage() {
                 <select
                   value={healthData.physicalActivity}
                   onChange={(e) => handleInputChange('physicalActivity', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="">Select activity level</option>
                   <option value="sedentary">Sedentary (little or no exercise)</option>
@@ -342,7 +363,7 @@ export default function StrokeRiskAssessmentPage() {
                 <select
                   value={healthData.familyHistory}
                   onChange={(e) => handleInputChange('familyHistory', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="">Select family history</option>
                   <option value="no">No family history</option>

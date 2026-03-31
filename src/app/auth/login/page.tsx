@@ -115,7 +115,7 @@ function MedicalIllustration() {
       <g transform="translate(68, 200) rotate(-20)">
         <rect x="0" y="0" width="36" height="18" rx="9" fill="white" fillOpacity="0.2" stroke="white" strokeOpacity="0.4" strokeWidth="1.5" />
         <line x1="18" y1="0" x2="18" y2="18" stroke="white" strokeOpacity="0.4" strokeWidth="1.5" />
-        <rect x="18" y="0" width="18" height="18" rx="0 9 9 0" fill="white" fillOpacity="0.15" />
+        <rect x="18" y="0" width="18" height="18" rx="9" fill="white" fillOpacity="0.15" />
       </g>
 
       {/* Heart icon */}
@@ -176,26 +176,31 @@ export default function LoginPage() {
     setError('')
 
     try {
-      setTimeout(() => {
-        const validCredentials = [
-          { email: 'patient@demo.com', password: 'patient123' },
-          { email: 'doctor@demo.com', password: 'doctor123' },
-          { email: 'admin@demo.com', password: 'admin123' }
-        ]
+      const response = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
 
-        const isValid = validCredentials.some(
-          cred => cred.email === formData.email && cred.password === formData.password
-        )
+      const result = await response.json()
 
-        if (isValid) {
-          router.push(redirectUrl)
-        } else {
-          setError('Invalid email or password. Please try again.')
-        }
-        setIsLoading(false)
-      }, 1000)
-    } catch (err) {
-      setError('Login failed. Please try again.')
+      if (result.success) {
+        // Save token and user data
+        localStorage.setItem('token', result.token)
+        localStorage.setItem('user', JSON.stringify(result.user))
+        
+        // Redirect to specific dashboard based on user type
+        const dashboardPath = result.user.userType === 'doctor' ? '/dashboard/doctor' : '/dashboard/patient'
+        router.push(dashboardPath)
+      } else {
+        setError(result.error || 'Invalid email or password. Please try again.')
+      }
+    } catch (err: any) {
+      console.error('Login error:', err)
+      setError('Login failed. Please check your connection and try again.')
+    } finally {
       setIsLoading(false)
     }
   }
@@ -368,13 +373,13 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Demo Credentials */}
+          {/* Backend Info */}
           <div className="mt-8 p-4 bg-gray-50 text-gray-500 rounded-lg">
-            <p className="text-xs font-bold mb-2">Demo Credentials:</p>
+            <p className="text-xs font-bold mb-2">Backend Integration:</p>
             <div className="text-xs space-y-1">
-              <p><span className="font-medium">Patient:</span> patient@demo.com / patient123</p>
-              <p><span className="font-medium">Doctor:</span> doctor@demo.com / doctor123</p>
-              <p><span className="font-medium">Admin:</span> admin@demo.com / admin123</p>
+              <p><span className="font-medium">API:</span> http://localhost:8080/api/auth</p>
+              <p><span className="font-medium">Status:</span> Connected to real backend</p>
+              <p><span className="font-medium">Database:</span> MongoDB with JWT auth</p>
             </div>
           </div>
         </div>
