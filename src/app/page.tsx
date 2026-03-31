@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
+import SraCosLogo from '@/components/SraCosLogo'
 
 export default function Home() {
   const [currentStat, setCurrentStat] = useState(0)
@@ -277,14 +278,11 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <svg width="32" height="32" viewBox="0 0 40 40" className="w-8 h-8">
-                  <circle cx="20" cy="20" r="18" fill="#16A34A" />
-                  <path d="M20 8C14.5 8 10 12.5 10 18C10 23.5 14.5 28 20 28C25.5 28 30 23.5 30 18C30 12.5 25.5 8 20 8Z" fill="white"/>
-                  <path d="M20 12C17.8 12 16 13.8 16 16C16 18.2 17.8 20 20 20C22.2 20 24 18.2 24 16C24 13.8 22.2 12 20 12Z" fill="#16A34A"/>
-                  <path d="M15 22C15 22 17.5 24 20 24C22.5 24 25 22 25 22" stroke="#16A34A" strokeWidth="2" strokeLinecap="round"/>
-                  <path d="M12 15C12 15 8 18 8 22M28 15C28 15 32 18 32 22" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-                <span className="text-2xl font-bold">SRACOS</span>
+                <SraCosLogo 
+                  size="lg" 
+                  showText={true}
+                  className="text-white"
+                />
               </div>
               <p className="text-gray-400">
                 Stroke Risk Analysis & Prevention System
