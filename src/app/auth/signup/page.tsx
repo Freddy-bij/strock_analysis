@@ -384,10 +384,10 @@ export default function SignupPage() {
                   <button
                     type="button"
                     onClick={() => setUserType('patient')}
-                    className={`p-4 rounded-lg border-2 transition-all ${
+                    className={`p-4 rounded-lg border-2  transition-all ${
                       userType === 'patient'
                         ? 'border-green-500 bg-green-50 text-green-700'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-gray-200 hover:border-gray-500'
                     }`}
                   >
                     <User className="w-8 h-8 mx-auto mb-2" />
@@ -399,7 +399,7 @@ export default function SignupPage() {
                     className={`p-4 rounded-lg border-2 transition-all ${
                       userType === 'doctor'
                         ? 'border-green-500 bg-green-50 text-green-700'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-gray-200 hover:border-gray-500'
                     }`}
                   >
                     <Stethoscope className="w-8 h-8 mx-auto mb-2" />
