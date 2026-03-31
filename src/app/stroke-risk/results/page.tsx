@@ -296,7 +296,7 @@ export default function StrokeRiskResultsPage() {
                   >
                     <Phone className="w-4 h-4 mr-1" />
                     Talk to a doctor now
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
