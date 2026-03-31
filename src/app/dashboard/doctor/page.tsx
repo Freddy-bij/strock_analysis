@@ -26,12 +26,14 @@ import {
 } from 'lucide-react'
 import { DoctorDashboardStats, Appointment, Prescription, Patient } from '@/types'
 import { doctorsAPI } from '@/lib/api'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function DoctorDashboard() {
   const [stats, setStats] = useState<DoctorDashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const { user, isAuthenticated, logout } = useAuth()
 
   useEffect(() => {
     fetchDashboardData()
@@ -162,7 +164,7 @@ export default function DoctorDashboard() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, Dr. Smith!
+            Welcome back, Dr. {user?.lastName || user?.firstName || 'User'}!
           </h1>
           <p className="text-gray-600">You have {stats?.todayAppointments.length || 0} appointments today</p>
         </div>

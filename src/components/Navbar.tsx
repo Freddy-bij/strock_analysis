@@ -142,7 +142,7 @@ export default function Navbar({ isScrolled = false }: NavbarProps) {
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         <Activity className="w-4 h-4" />
-                        <span>Dashboard</span>
+                        <span>My Dashboard</span>
                       </Link>
                       
                       <Link
