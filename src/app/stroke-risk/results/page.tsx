@@ -97,47 +97,41 @@ export default function StrokeRiskResultsPage() {
   const handleDownloadReport = () => {
     if (!results) return
     
-    // Create a printable report
-    const printWindow = window.open('', '_blank')
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Stroke Risk Assessment Report</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              .header { text-align: center; margin-bottom: 30px; }
-              .risk-level { font-size: 24px; font-weight: bold; margin: 20px 0; }
-              .section { margin: 20px 0; }
-              .factor { margin: 5px 0; }
-              .recommendation { margin: 5px 0; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>Stroke Risk Assessment Report</h1>
-              <p>Assessment Date: ${new Date(results.assessmentDate).toLocaleDateString()}</p>
-            </div>
-            <div class="risk-level">
-              Risk Level: ${results.riskLevel.toUpperCase()} (Score: ${results.riskScore})
-            </div>
-            <div class="section">
-              <h3>Critical Risk Factors:</h3>
-              ${results.criticalFactors.map(factor => `<div class="factor">• ${factor}</div>`).join('')}
-            </div>
-            <div class="section">
-              <h3>Recommendations:</h3>
-              ${results.recommendations.map(rec => `<div class="recommendation">• ${rec}</div>`).join('')}
-            </div>
-            <div class="section">
-              <p><strong>Next Assessment Recommended:</strong> ${new Date(results.nextAssessmentDate).toLocaleDateString()}</p>
-            </div>
-          </body>
-        </html>
-      `)
-      printWindow.document.close()
-      printWindow.print()
-    }
+    // Create report content
+    const reportContent = `
+STROKE RISK ASSESSMENT REPORT
+=====================================
+
+Assessment Date: ${new Date(results.assessmentDate).toLocaleDateString()}
+Risk Level: ${results.riskLevel.toUpperCase()} (Score: ${results.riskScore})
+
+CRITICAL RISK FACTORS:
+${results.criticalFactors.map(factor => `• ${factor}`).join('\n')}
+
+RECOMMENDATIONS:
+${results.recommendations.map(rec => `• ${rec}`).join('\n')}
+
+Next Assessment Recommended: ${new Date(results.nextAssessmentDate).toLocaleDateString()}
+
+---
+This report was generated on ${new Date().toLocaleDateString()} and is for informational purposes only.
+Please consult with your healthcare provider for proper diagnosis and treatment.
+    `.trim()
+    
+    // Create a blob with the report content
+    const blob = new Blob([reportContent], { type: 'text/plain' })
+    const url = window.URL.createObjectURL(blob)
+    
+    // Create a temporary link element and trigger download
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `stroke-risk-report-${new Date().toISOString().split('T')[0]}.txt`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    // Clean up the URL
+    window.URL.revokeObjectURL(url)
   }
 
   if (loading) {
@@ -272,12 +266,6 @@ export default function StrokeRiskResultsPage() {
           </button>
         </div>
 
-                Please consult with your healthcare provider for proper diagnosis, treatment, and personalized medical recommendations.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Emergency Warning */}
         {results.riskLevel === 'high' && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 mt-6">
@@ -296,7 +284,7 @@ export default function StrokeRiskResultsPage() {
                   >
                     <Phone className="w-4 h-4 mr-1" />
                     Talk to a doctor now
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

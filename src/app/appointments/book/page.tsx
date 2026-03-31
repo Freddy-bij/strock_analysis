@@ -20,7 +20,7 @@ import {
 import { Doctor, TimeSlot, AppointmentBookingForm } from '@/types'
 import { useAuth } from '@/hooks/useAuth'
 import UserAvatar from '@/components/UserAvatar'
-import { appointmentsAPI, patientsAPI } from '@/lib/api'
+import { appointmentsAPI, patientsAPI, doctorsAPI } from '@/lib/api'
 
 export default function BookAppointment() {
   const [step, setStep] = useState(1)
@@ -56,90 +56,84 @@ export default function BookAppointment() {
   ]
 
   useEffect(() => {
-    // Mock data for now - in real app, fetch from API
-    const mockDoctors: Doctor[] = [
-      {
-        id: '1',
-        firstName: 'John',
-        lastName: 'Smith',
-        email: 'john.smith@example.com',
-        phone: '+1234567890',
-        dateOfBirth: '1980-01-01',
-        role: 'doctor',
-        status: 'active',
-        specialization: 'Neurology',
-        licenseNumber: 'MD123456',
-        experience: 15,
-        education: ['Harvard Medical School'],
-        certifications: ['Board Certified Neurologist', 'Stroke Specialist'],
-        consultationFee: 150,
-        rating: 4.8,
-        availableSlots: [],
-        createdAt: '2020-01-01',
-        updatedAt: '2024-01-01'
-      },
-      {
-        id: '2',
-        firstName: 'Sarah',
-        lastName: 'Johnson',
-        email: 'sarah.johnson@example.com',
-        phone: '+1234567890',
-        dateOfBirth: '1985-01-01',
-        role: 'doctor',
-        status: 'active',
-        specialization: 'Stroke Medicine',
-        licenseNumber: 'MD789012',
-        experience: 12,
-        education: ['Johns Hopkins Medical School'],
-        certifications: ['Board Certified Stroke Specialist'],
-        consultationFee: 175,
-        rating: 4.9,
-        availableSlots: [],
-        createdAt: '2020-01-01',
-        updatedAt: '2024-01-01'
-      },
-      {
-        id: '3',
-        firstName: 'Michael',
-        lastName: 'Brown',
-        email: 'michael.brown@example.com',
-        phone: '+1234567890',
-        dateOfBirth: '1978-01-01',
-        role: 'doctor',
-        status: 'active',
-        specialization: 'Preventive Medicine',
-        licenseNumber: 'MD345678',
-        experience: 18,
-        education: ['Mayo Clinic Medical School'],
-        certifications: ['Board Certified Preventive Medicine'],
-        consultationFee: 125,
-        rating: 4.7,
-        availableSlots: [],
-        createdAt: '2020-01-01',
-        updatedAt: '2024-01-01'
-      },
-      {
-        id: '4',
-        firstName: 'Emily',
-        lastName: 'Davis',
-        email: 'emily.davis@example.com',
-        phone: '+1234567890',
-        dateOfBirth: '1982-01-01',
-        role: 'doctor',
-        status: 'active',
-        specialization: 'Cardiology',
-        licenseNumber: 'MD901234',
-        experience: 14,
-        education: ['Cleveland Clinic Lerner College of Medicine'],
-        certifications: ['Board Certified Cardiologist'],
-        consultationFee: 160,
-        rating: 4.8,
-        availableSlots: [],
-        createdAt: '2020-01-01',
-        updatedAt: '2024-01-01'
+    // Fetch real doctors from API
+    const fetchDoctors = async () => {
+      try {
+        const result = await doctorsAPI.getAllDoctors() as any
+        if (result.success && result.data) {
+          // Transform backend data to match frontend Doctor interface
+          const transformedDoctors = result.data.map((doctor: any) => ({
+            id: doctor._id,
+            firstName: doctor.firstName,
+            lastName: doctor.lastName,
+            email: doctor.email,
+            phone: doctor.phone || '+1234567890',
+            dateOfBirth: doctor.dateOfBirth || '1980-01-01',
+            role: doctor.userType,
+            status: doctor.status,
+            specialization: doctor.specialization,
+            licenseNumber: doctor.licenseNumber || 'MD000000',
+            experience: doctor.experience || 0,
+            education: doctor.education || [],
+            certifications: doctor.certifications || [],
+            consultationFee: doctor.consultationFee || 100,
+            rating: doctor.rating || 0,
+            availableSlots: [],
+            createdAt: doctor.createdAt || '2020-01-01',
+            updatedAt: doctor.updatedAt || '2024-01-01'
+          }))
+          setDoctors(transformedDoctors)
+        }
+      } catch (error) {
+        console.error('Failed to fetch doctors:', error)
+        // Fallback to mock data if API fails
+        const mockDoctors: Doctor[] = [
+          {
+            id: '1',
+            firstName: 'John',
+            lastName: 'Smith',
+            email: 'john.smith@example.com',
+            phone: '+1234567890',
+            dateOfBirth: '1980-01-01',
+            role: 'doctor',
+            status: 'active',
+            specialization: 'Neurology',
+            licenseNumber: 'MD123456',
+            experience: 15,
+            education: ['Harvard Medical School'],
+            certifications: ['Board Certified Neurologist', 'Stroke Specialist'],
+            consultationFee: 150,
+            rating: 4.8,
+            availableSlots: [],
+            createdAt: '2020-01-01',
+            updatedAt: '2024-01-01'
+          },
+          {
+            id: '2',
+            firstName: 'Sarah',
+            lastName: 'Johnson',
+            email: 'sarah.johnson@example.com',
+            phone: '+1234567891',
+            dateOfBirth: '1982-05-15',
+            role: 'doctor',
+            status: 'active',
+            specialization: 'Stroke Medicine',
+            licenseNumber: 'MD789012',
+            experience: 12,
+            education: ['Johns Hopkins School of Medicine'],
+            certifications: ['Board Certified Stroke Specialist'],
+            consultationFee: 175,
+            rating: 4.9,
+            availableSlots: [],
+            createdAt: '2020-01-01',
+            updatedAt: '2024-01-01'
+          }
+        ]
+        setDoctors(mockDoctors)
       }
-    ]
-    setDoctors(mockDoctors)
+    }
+
+    fetchDoctors()
   }, [])
 
   useEffect(() => {
@@ -240,7 +234,7 @@ export default function BookAppointment() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -283,7 +277,7 @@ export default function BookAppointment() {
                     placeholder="Search doctors..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full text-gray-500 pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
                 <select
@@ -363,7 +357,7 @@ export default function BookAppointment() {
                 max={getMaxDate()}
                 value={selectedDate}
                 onChange={(e) => handleDateSelect(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
 
@@ -444,7 +438,7 @@ export default function BookAppointment() {
                       value="in-person"
                       checked={formData.consultationType === 'in-person'}
                       onChange={(e) => setFormData(prev => ({ ...prev, consultationType: 'in-person' }))}
-                      className="sr-only"
+                      className="sr-only text-gray-500"
                     />
                     <div className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
                       formData.consultationType === 'in-person' 
@@ -463,7 +457,7 @@ export default function BookAppointment() {
                       value="video"
                       checked={formData.consultationType === 'video'}
                       onChange={(e) => setFormData(prev => ({ ...prev, consultationType: 'video' }))}
-                      className="sr-only"
+                      className="sr-only text-gray-500"
                     />
                     <div className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
                       formData.consultationType === 'video' 

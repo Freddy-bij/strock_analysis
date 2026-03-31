@@ -78,26 +78,29 @@ export const authAPI = {
 export const patientsAPI = {
   getProfile: async () => {
     try {
-      const response = await api.get('/patients/profile')
+      const response = await api.get('/users/profile')
       return response.data
     } catch (error) {
       console.warn('API endpoint not available, returning mock data')
       return {
-        id: '1',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        phone: '+1234567890',
-        dateOfBirth: '1985-01-01',
-        role: 'patient',
-        status: 'active'
+        success: true,
+        data: {
+          id: '1',
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john.doe@example.com',
+          phone: '+1234567890',
+          dateOfBirth: '1985-01-01',
+          userType: 'patient',
+          status: 'active'
+        }
       }
     }
   },
   
   updateProfile: async (profileData: any) => {
     try {
-      const response = await api.put('/patients/profile', profileData)
+      const response = await api.put('/users/profile', profileData)
       return response.data
     } catch (error) {
       console.warn('API endpoint not available, returning mock data')
@@ -107,7 +110,7 @@ export const patientsAPI = {
   
   getAppointments: async () => {
     try {
-      const response = await api.get('/patients/appointments')
+      const response = await api.get('/appointments/patient')
       return response.data
     } catch (error) {
       console.warn('API endpoint not available, returning mock data')
@@ -146,10 +149,8 @@ export const patientsAPI = {
   
   getPrescriptions: async () => {
     try {
-      const response = await api.get('/patients/prescriptions')
-      return response.data
-    } catch (error) {
-      console.warn('API endpoint not available, returning mock data')
+      // For now, return mock data as prescriptions endpoint may not be implemented
+      console.warn('Prescriptions endpoint not implemented, returning mock data')
       return [
         {
           id: '1',
@@ -168,35 +169,18 @@ export const patientsAPI = {
             }
           ],
           status: 'active'
-        },
-        {
-          id: '2',
-          date: '2024-02-20',
-          doctor: {
-            firstName: 'Dr. Michael',
-            lastName: 'Brown',
-            specialization: 'Cardiology'
-          },
-          medications: [
-            {
-              name: 'Lisinopril',
-              dosage: '10mg',
-              frequency: 'once daily',
-              duration: '30 days'
-            }
-          ],
-          status: 'completed'
         }
       ]
+    } catch (error) {
+      console.warn('API endpoint not available, returning mock data')
+      return []
     }
   },
   
   getMedicalHistory: async () => {
     try {
-      const response = await api.get('/patients/medical-history')
-      return response.data
-    } catch (error) {
-      console.warn('API endpoint not available, returning mock data')
+      // For now, return mock data as medical history endpoint may not be implemented
+      console.warn('Medical history endpoint not implemented, returning mock data')
       return [
         {
           id: '1',
@@ -223,6 +207,9 @@ export const patientsAPI = {
           status: 'completed'
         }
       ]
+    } catch (error) {
+      console.warn('API endpoint not available, returning mock data')
+      return []
     }
   },
   
@@ -277,22 +264,139 @@ export const patientsAPI = {
 // Doctors API
 export const doctorsAPI = {
   getProfile: async () => {
-    const response = await api.get('/doctors/profile')
-    return response.data
-  },
-  
-  updateProfile: async (profileData: any) => {
-    const response = await api.put('/doctors/profile', profileData)
-    return response.data
-  },
-  
-  getAppointments: async () => {
     try {
-      const response = await api.get('/doctors/appointments')
+      const response = await api.get('/doctors/profile')
       return response.data
     } catch (error) {
       console.warn('API endpoint not available, returning mock data')
-      // Return mock data for development
+      return {
+        success: true,
+        data: {
+          id: '1',
+          firstName: 'Dr. Sarah',
+          lastName: 'Johnson',
+          email: 'sarah.johnson@example.com',
+          specialization: 'General Practice',
+          experience: 10,
+          rating: 4.8,
+          consultationFee: 150
+        }
+      }
+    }
+  },
+  
+  updateProfile: async (profileData: any) => {
+    try {
+      const response = await api.put('/doctors/profile', profileData)
+      return response.data
+    } catch (error) {
+      console.warn('API endpoint not available, returning mock data')
+      return { success: true, message: 'Profile updated successfully' }
+    }
+  },
+  
+  getAllDoctors: async () => {
+    try {
+      const response = await api.get('/doctors')
+      return response.data
+    } catch (error) {
+      console.warn('API endpoint not available, returning mock data')
+      return {
+        success: true,
+        data: [
+          {
+            _id: '1',
+            firstName: 'Dr. John',
+            lastName: 'Smith',
+            email: 'john.smith@example.com',
+            userType: 'doctor',
+            specialization: 'Neurology',
+            experience: 15,
+            rating: 4.8,
+            consultationFee: 150,
+            status: 'active'
+          },
+          {
+            _id: '2',
+            firstName: 'Dr. Sarah',
+            lastName: 'Johnson',
+            email: 'sarah.johnson@example.com',
+            userType: 'doctor',
+            specialization: 'Stroke Medicine',
+            experience: 12,
+            rating: 4.9,
+            consultationFee: 175,
+            status: 'active'
+          },
+          {
+            _id: '3',
+            firstName: 'Dr. Michael',
+            lastName: 'Brown',
+            email: 'michael.brown@example.com',
+            userType: 'doctor',
+            specialization: 'Preventive Medicine',
+            experience: 18,
+            rating: 4.7,
+            consultationFee: 125,
+            status: 'active'
+          },
+          {
+            _id: '4',
+            firstName: 'Dr. Emily',
+            lastName: 'Davis',
+            email: 'emily.davis@example.com',
+            userType: 'doctor',
+            specialization: 'Cardiology',
+            experience: 14,
+            rating: 4.8,
+            consultationFee: 160,
+            status: 'active'
+          }
+        ]
+      }
+    }
+  },
+  
+  getPatients: async () => {
+    try {
+      const response = await api.get('/doctors/patients')
+      return response.data
+    } catch (error) {
+      console.warn('API endpoint not available, returning mock data')
+      return {
+        success: true,
+        data: [
+          {
+            id: '1',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john.doe@example.com',
+            phone: '+1234567890',
+            dateOfBirth: '1985-01-01',
+            role: 'patient',
+            status: 'active'
+          },
+          {
+            id: '2',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane.smith@example.com',
+            phone: '+1234567891',
+            dateOfBirth: '1990-05-15',
+            role: 'patient',
+            status: 'active'
+          }
+        ]
+      }
+    }
+  },
+
+  getAppointments: async () => {
+    try {
+      const response = await api.get('/appointments/doctor')
+      return response.data
+    } catch (error) {
+      console.warn('API endpoint not available, returning mock data')
       return [
         {
           id: '1',
@@ -319,38 +423,6 @@ export const doctorsAPI = {
             firstName: 'Jane',
             lastName: 'Smith'
           }
-        }
-      ]
-    }
-  },
-  
-  getPatients: async () => {
-    try {
-      const response = await api.get('/doctors/patients')
-      return response.data
-    } catch (error) {
-      console.warn('API endpoint not available, returning mock data')
-      // Return mock data for development
-      return [
-        {
-          id: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@example.com',
-          phone: '+1234567890',
-          dateOfBirth: '1985-01-01',
-          role: 'patient',
-          status: 'active'
-        },
-        {
-          id: '2',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          email: 'jane.smith@example.com',
-          phone: '+1234567891',
-          dateOfBirth: '1990-05-15',
-          role: 'patient',
-          status: 'active'
         }
       ]
     }

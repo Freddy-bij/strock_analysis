@@ -500,7 +500,7 @@ export default function SignupPage() {
                         required
                         value={formData.licenseNumber}
                         onChange={handleChange}
-                        className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+                        className="block w-full text-gray-500 px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
                         placeholder="Enter your medical license number"
                       />
                     </div>
@@ -523,7 +523,7 @@ export default function SignupPage() {
                         required
                         value={formData.password}
                         onChange={handleChange}
-                        className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+                        className="block w-full text-gray-500 pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
                         placeholder="Create a password"
                       />
                       <button
@@ -579,7 +579,7 @@ export default function SignupPage() {
                     name="terms"
                     type="checkbox"
                     required
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-gray-500 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                   />
                   <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
                     I agree to the{' '}

@@ -19,38 +19,47 @@ import {
   Pill,
   Stethoscope,
   ChevronRight,
-  LogOut
+  LogOut,
+  AlertTriangle
 } from 'lucide-react'
 import { PatientDashboardStats, Appointment, Prescription, MedicalRecord } from '@/types'
 import { patientsAPI } from '@/lib/api'
 import { useAuth } from '@/hooks/useAuth'
 import UserAvatar from '@/components/UserAvatar'
 
+interface StrokeRiskData {
+  riskScore: number
+  riskLevel: 'low' | 'medium' | 'high'
+  lastAssessmentDate: string
+  recommendations: string[]
+}
+
 export default function PatientDashboard() {
   const [stats, setStats] = useState<PatientDashboardStats | null>(null)
+  const [strokeRiskData, setStrokeRiskData] = useState<StrokeRiskData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const { user, isAuthenticated, logout } = useAuth()
 
   // Calculate health score based on available data
-  const calculateHealthScore = (appointments: Appointment[], prescriptions: Prescription[], records: MedicalRecord[]): number => {
+  const calculateHealthScore = (appointments: any[], prescriptions: any[], records: any[]): number => {
     let score = 75 // Base score
     
     // Bonus points for recent medical records (indicating regular care)
-    const recentRecords = records.filter(r => 
+    const recentRecords = records.filter((r: any) => 
       new Date(r.date) > new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
     ).length
     score += Math.min(recentRecords * 3, 15) // Max 15 points for recent records
     
     // Bonus points for medication adherence
-    const activeMedications = prescriptions.filter(p => p.status === 'active').length
+    const activeMedications = prescriptions.filter((p: any) => p.status === 'active').length
     if (activeMedications > 0 && activeMedications <= 3) {
       score += 10 // Good medication management
     }
     
     // Bonus points for upcoming appointments (proactive care)
-    const upcomingAppointments = appointments.filter(a => 
+    const upcomingAppointments = appointments.filter((a: any) => 
       new Date(a.date) >= new Date() && a.status !== 'cancelled'
     ).length
     score += Math.min(upcomingAppointments * 3, 9) // Max 9 points for appointments
@@ -67,26 +76,64 @@ export default function PatientDashboard() {
     try {
       setLoading(true)
       const [appointments, prescriptions, records] = await Promise.all([
-        patientsAPI.getAppointments() as Promise<Appointment[]>,
-        patientsAPI.getPrescriptions() as Promise<Prescription[]>,
-        patientsAPI.getMedicalHistory() as Promise<MedicalRecord[]>
+        patientsAPI.getAppointments(),
+        patientsAPI.getPrescriptions(),
+        patientsAPI.getMedicalHistory()
       ])
 
+      // Load stroke risk data from backend API
+      try {
+        const token = localStorage.getItem('token')
+        if (token) {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/stroke-risk/latest`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+          
+          if (response.ok) {
+            const result = await response.json()
+            if (result.success && result.data) {
+              setStrokeRiskData({
+                riskScore: result.data.riskScore,
+                riskLevel: result.data.riskLevel,
+                lastAssessmentDate: result.data.assessmentDate,
+                recommendations: result.data.recommendations
+              })
+            }
+          }
+        }
+      } catch (strokeRiskError) {
+        console.log('Stroke risk data not available from backend')
+        // Fallback to sessionStorage if backend fails
+        const strokeRiskResults = sessionStorage.getItem('strokeRiskResults')
+        if (strokeRiskResults) {
+          const results = JSON.parse(strokeRiskResults)
+          setStrokeRiskData({
+            riskScore: results.riskScore,
+            riskLevel: results.riskLevel,
+            lastAssessmentDate: results.assessmentDate,
+            recommendations: results.recommendations
+          })
+        }
+      }
+
       setStats({
-        upcomingAppointments: appointments.filter((a: Appointment) => 
+        upcomingAppointments: (appointments as any[]).filter((a: any) => 
           new Date(a.date) >= new Date() && a.status !== 'cancelled'
         ).slice(0, 3),
-        recentPrescriptions: prescriptions.slice(0, 3),
-        medicalRecords: records.slice(0, 3),
+        recentPrescriptions: (prescriptions as any[]).slice(0, 3),
+        medicalRecords: (records as any[]).slice(0, 3),
         healthMetrics: {
-          lastCheckup: records.find((r: MedicalRecord) => r.type === 'diagnosis')?.date || '',
+          lastCheckup: (records as any[]).find((r: any) => r.type === 'diagnosis')?.date || '',
           upcomingVaccinations: [],
-          medicationReminders: prescriptions
-            .filter((p: Prescription) => p.status === 'active')
-            .flatMap(p => p.medications)
+          medicationReminders: (prescriptions as any[])
+            .filter((p: any) => p.status === 'active')
+            .flatMap((p: any) => p.medications || [])
         },
         // Calculate health score based on available data
-        healthScore: calculateHealthScore(appointments, prescriptions, records)
+        healthScore: calculateHealthScore(appointments as any[], prescriptions as any[], records as any[])
       })
     } catch (err) {
       setError('Failed to load dashboard data')
@@ -226,6 +273,103 @@ export default function PatientDashboard() {
             <h3 className="text-2xl font-bold text-gray-900">{stats?.healthScore || 0}%</h3>
             <p className="text-gray-600">Overall Health</p>
           </div>
+        </div>
+
+        {/* Stroke Risk Status */}
+        <div className="bg-white rounded-xl shadow-sm border p-6 mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Stroke Risk Status</h2>
+            <Link 
+              href="/stroke-risk"
+              className="text-green-600 hover:text-green-500 text-sm font-medium flex items-center"
+            >
+              Retake Assessment
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Link>
+          </div>
+          
+          {strokeRiskData ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                    strokeRiskData.riskLevel === 'low' ? 'bg-green-100' :
+                    strokeRiskData.riskLevel === 'medium' ? 'bg-yellow-100' :
+                    'bg-red-100'
+                  }`}>
+                    <Heart className={`w-8 h-8 ${
+                      strokeRiskData.riskLevel === 'low' ? 'text-green-600' :
+                      strokeRiskData.riskLevel === 'medium' ? 'text-yellow-600' :
+                      'text-red-600'
+                    }`} />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className={`text-lg font-bold ${
+                        strokeRiskData.riskLevel === 'low' ? 'text-green-600' :
+                        strokeRiskData.riskLevel === 'medium' ? 'text-yellow-600' :
+                        'text-red-600'
+                      }`}>
+                        {strokeRiskData.riskLevel.toUpperCase()} RISK
+                      </span>
+                      {strokeRiskData.riskLevel === 'high' && (
+                        <AlertTriangle className="w-5 h-5 text-red-600" />
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Risk Score: {strokeRiskData.riskScore}/100
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Last assessed: {new Date(strokeRiskData.lastAssessmentDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="text-right">
+                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                    strokeRiskData.riskLevel === 'low' ? 'bg-green-100 text-green-800' :
+                    strokeRiskData.riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {strokeRiskData.riskLevel === 'low' && '✓ Good'}
+                    {strokeRiskData.riskLevel === 'medium' && '⚠ Moderate'}
+                    {strokeRiskData.riskLevel === 'high' && '! High Risk'}
+                  </div>
+                </div>
+              </div>
+              
+              {strokeRiskData.recommendations.length > 0 && (
+                <div className="border-t pt-4">
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Recommendations</h3>
+                  <div className="space-y-2">
+                    {strokeRiskData.recommendations.slice(0, 3).map((rec, index) => (
+                      <div key={index} className="flex items-start space-x-2">
+                        <div className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-sm text-gray-600">{rec}</p>
+                      </div>
+                    ))}
+                    {strokeRiskData.recommendations.length > 3 && (
+                      <p className="text-xs text-gray-500">
+                        +{strokeRiskData.recommendations.length - 3} more recommendations
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Heart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 mb-4">No stroke risk assessment completed yet</p>
+              <Link 
+                href="/stroke-risk"
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Activity className="w-4 h-4 mr-2" />
+                Take Assessment
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Quick Actions */}
