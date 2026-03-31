@@ -51,7 +51,7 @@ export default function Navbar({ isScrolled = false }: NavbarProps) {
           <div className="flex items-center space-x-3">
             <SraCosLogo 
               size="md" 
-              color={isScrolled ? '#10b981' : '#ffffff'}
+              isScrolled={isScrolled}
               className="font-bold"
             />
           </div>

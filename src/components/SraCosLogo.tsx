@@ -1,20 +1,21 @@
 'use client'
 
 import React from 'react'
-import { sraCosLogoData } from '@/utils/logoConverter'
 
 interface SraCosLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'
   color?: string
   className?: string
   showText?: boolean
+  isScrolled?: boolean
 }
 
 export default function SraCosLogo({ 
   size = 'md', 
   color = '#10b981', 
   className = '',
-  showText = true 
+  showText = true,
+  isScrolled = false
 }: SraCosLogoProps) {
   const sizeClasses = {
     sm: 'w-6 h-6',
@@ -30,72 +31,76 @@ export default function SraCosLogo({
     xl: 'text-xl'
   }
 
+  // Dynamic colors based on scroll state
+  const primaryColor = isScrolled ? '#000000' : '#10b981' // black when scrolled, green when not
+  const secondaryColor = isScrolled ? '#ffffff' : '#ffffff' // always white
+  const accentColor = isScrolled ? '#10b981' : '#10b981' // always green for accent
+
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
       <svg 
         className={`${sizeClasses[size]}`}
-        viewBox={sraCosLogoData.viewBox} 
+        viewBox="0 0 100 100" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Main heart shape */}
+        {/* Analytics brain shape */}
         <path 
-          d="M50 15C40 15 35 25 35 35C35 45 40 55 50 65C60 55 65 45 65 35C65 25 60 15 50 15Z"
-          fill={color}
-          stroke={color}
-          strokeWidth="2"
+          d="M50 20C35 20 25 30 25 45C25 55 30 65 40 70C45 75 55 75 60 70C70 65 75 55 75 45C75 30 65 20 50 20Z" 
+          fill={primaryColor}
+          opacity="0.9"
         />
         
-        {/* Medical cross */}
+        {/* Strong analytics grid pattern */}
+        <g opacity="0.3">
+          <path d="M30 30H70M30 35H70M30 40H70M30 45H70M30 50H70M30 55H70M30 60H70" stroke={secondaryColor} strokeWidth="1"/>
+          <path d="M35 25V65M45 25V65M55 25V65M65 25V65" stroke={secondaryColor} strokeWidth="1"/>
+        </g>
+        
+        {/* Analytics data points */}
+        <circle cx="40" cy="35" r="3" fill={accentColor}/>
+        <circle cx="50" cy="30" r="3" fill={accentColor}/>
+        <circle cx="60" cy="35" r="3" fill={accentColor}/>
+        <circle cx="45" cy="45" r="3" fill={accentColor}/>
+        <circle cx="55" cy="45" r="3" fill={accentColor}/>
+        <circle cx="50" cy="55" r="3" fill={accentColor}/>
+        
+        {/* Strong analytics connection lines */}
+        <path d="M40 35L50 30L60 35M40 35L45 45M60 35L55 45M45 45L50 55L55 45" 
+          stroke={accentColor} strokeWidth="2" opacity="0.8"/>
+        
+        {/* Heart pulse for health monitoring */}
         <path 
-          d="M42 35H58M50 27V43"
-          stroke="white"
-          strokeWidth="3"
+          d="M20 50C20 45 25 40 30 45C35 50 40 55 45 50" 
+          fill="none" 
+          stroke={accentColor} 
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+        <path 
+          d="M55 50C60 55 65 50 70 45C75 40 80 45 80 50" 
+          fill="none" 
+          stroke={accentColor} 
+          strokeWidth="2.5"
           strokeLinecap="round"
         />
         
-        {/* Neural network connections */}
+        {/* Strong analytics center symbol */}
+        <circle cx="50" cy="45" r="8" fill={secondaryColor} opacity="0.9"/>
         <path 
-          d="M25 20L75 20M25 80L75 80"
-          stroke={color}
-          strokeWidth="2"
-          opacity="0.3"
+          d="M46 45H54M50 41V49" 
+          stroke={accentColor} 
+          strokeWidth="2.5"
+          strokeLinecap="round"
         />
         
-        {/* Neural nodes */}
-        <circle 
-          cx="20" 
-          cy="50" 
-          r="4"
-          fill={color}
-          opacity="0.6"
-        />
-        <circle 
-          cx="80" 
-          cy="50" 
-          r="4"
-          fill={color}
-          opacity="0.6"
-        />
-        
-        {/* Brain-like connections */}
-        <circle cx="35" cy="30" r="2" fill="white" opacity="0.8"/>
-        <circle cx="50" cy="25" r="2" fill="white" opacity="0.8"/>
-        <circle cx="65" cy="30" r="2" fill="white" opacity="0.8"/>
-        <circle cx="40" cy="45" r="2" fill="white" opacity="0.8"/>
-        <circle cx="60" cy="45" r="2" fill="white" opacity="0.8"/>
-        
-        {/* Neural pathways */}
-        <path 
-          d="M35 30L50 25L65 30M35 30L40 45M65 30L60 45" 
-          stroke="white" 
-          strokeWidth="1"
-          opacity="0.6"
-        />
+        {/* Data flow indicators */}
+        <path d="M25 25L30 30M75 25L70 30M25 65L30 60M75 65L70 60" 
+          stroke={accentColor} strokeWidth="1.5" opacity="0.6"/>
       </svg>
       
       {showText && (
-        <span className={`${textSizes[size]} font-bold`} style={{ color }}>
+        <span className={`${textSizes[size]} font-bold`} style={{ color: primaryColor }}>
           SraCos
         </span>
       )}
