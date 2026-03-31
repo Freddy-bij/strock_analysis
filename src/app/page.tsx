@@ -2,15 +2,26 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import Navbar from '@/components/Navbar'
 
 export default function Home() {
   const [currentStat, setCurrentStat] = useState(0)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentStat((prev) => (prev + 1) % 4)
     }, 3000)
     return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const healthStats = [
@@ -62,22 +73,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-transparent absolute top-0 left-0 right-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-5">
-            <div className="flex items-center">
-              {/* Logo removed */}
-            </div>
-            <div className="hidden md:flex items-center space-x-9">
-              <Link href="#features" className="text-white hover:text-green-400 transition-colors font-medium">Features</Link>
-              <Link href="#impact" className="text-white hover:text-green-400 transition-colors font-medium">Impact</Link>
-              <Link href="/auth/login" className="bg-green-500 text-white px-6 py-3 rounded-full hover:bg-green-600 transition-colors font-semibold">
-                Login
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar isScrolled={isScrolled} />
 
       {/* Hero Section */}
       <section className="relative min-h-screen w-full flex flex-col">
