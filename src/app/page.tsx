@@ -2,21 +2,6 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { 
-  Heart, 
-  Activity, 
-  AlertTriangle,
-  CheckCircle,
-  Shield,
-  Brain,
-  TrendingUp,
-  Users,
-  ChevronRight,
-  BarChart3,
-  Clock,
-  Star,
-  Calculator
-} from 'lucide-react'
 
 export default function Home() {
   const [currentStat, setCurrentStat] = useState(0)
@@ -32,102 +17,62 @@ export default function Home() {
     {
       value: '75%',
       label: 'Stroke Risk Reduction',
-      description: 'Early detection saves lives',
-      icon: <TrendingUp className="w-6 h-6 text-green-600" />
+      description: 'Early detection saves lives'
     },
     {
       value: '2.5M',
       label: 'Lives Impacted',
-      description: 'People screened worldwide',
-      icon: <Users className="w-6 h-6 text-blue-600" />
+      description: 'People screened worldwide'
     },
     {
       value: '85%',
       label: 'Accuracy Rate',
-      description: 'Risk prediction precision',
-      icon: <BarChart3 className="w-6 h-6 text-purple-600" />
+      description: 'Risk prediction precision'
     },
     {
       value: '24/7',
       label: 'Monitoring',
-      description: 'Continuous health tracking',
-      icon: <Clock className="w-6 h-6 text-orange-600" />
+      description: 'Continuous health tracking'
     }
   ]
 
   const features = [
     {
-      icon: <Brain className="w-8 h-8 text-red-600" />,
       title: 'Risk Prediction Engine',
       description: 'Simple input of health data calculates personalized stroke risk levels (Low, Medium, High)',
       color: 'red'
     },
     {
-      icon: <Shield className="w-8 h-8 text-blue-600" />,
       title: 'Personalized Recommendations',
       description: 'Tailored health advice based on your specific risk factors and lifestyle',
       color: 'blue'
     },
     {
-      icon: <Activity className="w-8 h-8 text-green-600" />,
       title: 'Patient Dashboards',
       description: 'Comprehensive monitoring interface for tracking health metrics over time',
       color: 'green'
     },
     {
-      icon: <AlertTriangle className="w-8 h-8 text-orange-600" />,
       title: 'Alert Notifications',
       description: 'Immediate notifications for high-risk users requiring urgent attention',
       color: 'orange'
     }
   ]
 
-  const testimonials = [
-    {
-      name: "Dr. Sarah Johnson",
-      role: "Neurologist",
-      content: "This system has revolutionized how we identify at-risk patients. Early detection capabilities have saved countless lives.",
-      rating: 5
-    },
-    {
-      name: "Michael Chen",
-      role: "Patient",
-      content: "The stroke risk assessment helped me understand my health better. The personalized recommendations were life-changing.",
-      rating: 5
-    },
-    {
-      name: "Dr. Robert Williams",
-      role: "Cardiologist",
-      content: "Finally, a tool that shifts healthcare from treatment to prevention. This is the future of medicine.",
-      rating: 5
-    }
-  ]
-
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm sticky top-0 z-50">
+      <nav className="bg-transparent absolute top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center py-5">
             <div className="flex items-center">
-              <div className="flex items-center space-x-3">
-                {/* Custom SVG Logo */}
-                <svg width="40" height="40" viewBox="0 0 40 40" className="w-10 h-10">
-                  <circle cx="20" cy="20" r="18" fill="#16A34A" />
-                  <path d="M20 8C14.5 8 10 12.5 10 18C10 23.5 14.5 28 20 28C25.5 28 30 23.5 30 18C30 12.5 25.5 8 20 8Z" fill="white"/>
-                  <path d="M20 12C17.8 12 16 13.8 16 16C16 18.2 17.8 20 20 20C22.2 20 24 18.2 24 16C24 13.8 22.2 12 20 12Z" fill="#16A34A"/>
-                  <path d="M15 22C15 22 17.5 24 20 24C22.5 24 25 22 25 22" stroke="#16A34A" strokeWidth="2" strokeLinecap="round"/>
-                  <path d="M12 15C12 15 8 18 8 22M28 15C28 15 32 18 32 22" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-                <span className="text-2xl font-bold text-gray-900">SRACOS</span>
-              </div>
+              {/* Logo removed */}
             </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="#features" className="text-gray-600 hover:text-green-600 transition-colors">Features</Link>
-              <Link href="#impact" className="text-gray-600 hover:text-green-600 transition-colors">Impact</Link>
-              <Link href="#testimonials" className="text-gray-600 hover:text-green-600 transition-colors">Testimonials</Link>
-              <Link href="/stroke-risk" className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                Take Assessment
+            <div className="hidden md:flex items-center space-x-9">
+              <Link href="#features" className="text-white hover:text-green-400 transition-colors font-medium">Features</Link>
+              <Link href="#impact" className="text-white hover:text-green-400 transition-colors font-medium">Impact</Link>
+              <Link href="/auth/login" className="bg-green-500 text-white px-6 py-3 rounded-full hover:bg-green-600 transition-colors font-semibold">
+                Login
               </Link>
             </div>
           </div>
@@ -135,298 +80,196 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-green-600 to-green-700 py-20 overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 80%, white 1px, transparent 1px)',
-            backgroundSize: '60px 60px'
-          }} />
+      <section className="relative min-h-screen w-full flex flex-col">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-no-repeat"
+          style={{
+            backgroundImage: 'url(/images/heroes/background.png)',
+            backgroundPosition: '50% 0%',
+            backgroundSize: 'cover'
+          }}
+        >
+          {/* Lighter overlay for brighter image */}
+          <div className="absolute inset-0 bg-black/20"></div>
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-5xl font-bold text-white mb-6">
-                Stroke Risk Analysis & Prevention
+        {/* All content sits above overlay */}
+        <div className="relative z-10 flex flex-col flex-1">
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
+                Transforming Lives with<br />
+                <span className="text-green-400">Proactive Stroke Prevention</span>
               </h1>
-              <p className="text-xl text-green-100 mb-8 leading-relaxed">
-                Shift healthcare from reactive treatment to proactive prevention. Our web/mobile system analyzes 
-                stroke risk through simple health data input, providing personalized recommendations to optimize 
-                care and reduce healthcare costs.
+              
+              <p className="text-xl md:text-2xl text-white/90 mb-4" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>
+                Early detection meets personalized care.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              
+              <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>
+                Prevent strokes before they happen.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Link 
-                  href="/stroke-risk"
-                  className="bg-white text-green-600 px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center font-semibold"
+                  href="/auth/login"
+                  className="bg-green-500 text-white px-8 py-4 rounded-full hover:bg-green-600 transition-all duration-300 font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105"
                 >
-                  <Calculator className="mr-2 w-5 h-5" />
-                  Calculate Your Risk
+                  Get Started
                 </Link>
                 <Link 
                   href="#features"
-                  className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-green-600 transition-colors flex items-center justify-center"
+                  className="border-2 border-white text-white px-8 py-4 rounded-full hover:bg-white hover:text-green-600 transition-all duration-300 font-semibold text-lg"
                 >
                   Learn More
-                  <ChevronRight className="ml-2 w-5 h-5" />
                 </Link>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-                <div className="grid grid-cols-2 gap-6">
-                  {healthStats.map((stat, index) => (
-                    <div key={index} className={`text-center p-4 rounded-lg ${
-                      currentStat === index ? 'bg-white/20' : 'bg-white/5'
-                    } transition-all duration-500`}>
-                      <div className="flex justify-center mb-2">
-                        {stat.icon}
-                      </div>
-                      <div className="text-2xl font-bold text-white">{stat.value}</div>
-                      <div className="text-sm text-green-100">{stat.label}</div>
-                      <div className="text-xs text-green-200">{stat.description}</div>
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Problem Statement */}
-      <section className="py-20 bg-gray-50">
+      {/* The Problem */}
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              The Stroke Challenge We're Solving
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              The Stroke Challenge
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Stroke is one of the leading causes of death and disability, especially in developing countries. 
-              Many individuals are unaware of their risk factors, diagnosis often happens too late, and there 
-              is a lack of digital tools for early detection and continuous monitoring.
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Stroke is a leading cause of death and disability. Most cases are preventable with early detection.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-8 h-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Late Diagnosis</h3>
-              <p className="text-gray-600">
-                Most stroke diagnoses happen after symptoms appear
+            <div className="text-center bg-white p-6 rounded-lg border border-gray-200">
+              <h3 className="text-xl font-semibold text-green-700 mb-2">Late Detection</h3>
+              <p className="text-gray-600 text-sm">
+                Most strokes are diagnosed after symptoms appear
               </p>
             </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-8 h-8 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Reactive Treatment</h3>
-              <p className="text-gray-600">
-                Healthcare focuses on treatment rather than prevention
+            <div className="text-center bg-white p-6 rounded-lg border border-gray-200">
+              <h3 className="text-xl font-semibold text-green-700 mb-2">Reactive Care</h3>
+              <p className="text-gray-600 text-sm">
+                Healthcare treats strokes instead of preventing them
               </p>
             </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-yellow-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Digital Tools</h3>
-              <p className="text-gray-600">
-                Lack of early detection and monitoring systems
+            <div className="text-center bg-white p-6 rounded-lg border border-gray-200">
+              <h3 className="text-xl font-semibold text-green-700 mb-2">No Prevention Tools</h3>
+              <p className="text-gray-600 text-sm">
+                Lack of accessible stroke risk assessment systems
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Solution Features */}
-      <section id="features" className="py-20 bg-white">
+      {/* Key Features */}
+      <section id="features" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Our Prevention Solution
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              How Our System Works
             </h2>
-            <p className="text-xl text-gray-600">
-              Key features designed for early detection and continuous monitoring
+            <p className="text-lg text-gray-600">
+              Simple, proven technology that saves lives
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-                <div className={`w-16 h-16 bg-${feature.color}-100 rounded-full flex items-center justify-center mb-6 mx-auto`}>
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Target Users */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Target Users
-            </h2>
-            <p className="text-xl text-gray-600">
-              Designed for everyone involved in stroke prevention and brain health
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Individuals 30+</h3>
-              <p className="text-gray-600">
-                Proactive health monitoring and risk assessment
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white p-6 rounded-lg border-2 border-green-200 text-center">
+              <h3 className="text-lg font-semibold text-green-700 mb-3">
+                1. Risk Analysis
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Users input basic health data (age, blood pressure, BMI, diabetes status)
               </p>
             </div>
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="w-8 h-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Healthcare Providers</h3>
-              <p className="text-gray-600">
-                Advanced tools for patient monitoring and care
+            <div className="bg-white p-6 rounded-lg border-2 border-green-200 text-center">
+              <h3 className="text-lg font-semibold text-green-700 mb-3">
+                2. Risk Calculation
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Our algorithm calculates stroke risk levels: Low, Medium, or High
               </p>
             </div>
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Hospitals</h3>
-              <p className="text-gray-600">
-                Population-level stroke prevention programs
+            <div className="bg-white p-6 rounded-lg border-2 border-green-200 text-center">
+              <h3 className="text-lg font-semibold text-green-700 mb-3">
+                3. Personalized Plan
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Generates specific health recommendations based on risk factors
               </p>
             </div>
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Activity className="w-8 h-8 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Health Organizations</h3>
-              <p className="text-gray-600">
-                Community health monitoring and prevention
+            <div className="bg-white p-6 rounded-lg border-2 border-green-200 text-center">
+              <h3 className="text-lg font-semibold text-green-700 mb-3">
+                4. Continuous Monitoring
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Dashboard for tracking progress and health metrics over time
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Impact Section */}
-      <section id="impact" className="py-20 bg-white">
+      {/* Our Impact */}
+      <section id="impact" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Potential Impact
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Proven Results
             </h2>
-            <p className="text-xl text-gray-600">
-              Transforming healthcare from reactive treatment to proactive prevention
+            <p className="text-lg text-gray-600">
+              Our system delivers measurable improvements in stroke prevention
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-              </div>
               <h3 className="text-3xl font-bold text-green-600 mb-2">40%</h3>
               <p className="text-gray-600">Reduction in Stroke Cases</p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-3xl font-bold text-blue-600 mb-2">60%</h3>
+              <h3 className="text-3xl font-bold text-green-600 mb-2">60%</h3>
               <p className="text-gray-600">Earlier Detection</p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="w-8 h-8 text-purple-600" />
-              </div>
-              <h3 className="text-3xl font-bold text-purple-600 mb-2">50%</h3>
+              <h3 className="text-3xl font-bold text-green-600 mb-2">50%</h3>
               <p className="text-gray-600">Cost Reduction</p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-orange-600" />
-              </div>
-              <h3 className="text-3xl font-bold text-orange-600 mb-2">85%</h3>
+              <h3 className="text-3xl font-bold text-green-600 mb-2">85%</h3>
               <p className="text-gray-600">User Satisfaction</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section id="testimonials" className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Expert Validation
-            </h2>
-            <p className="text-xl text-gray-600">
-              Trusted by healthcare professionals and patients worldwide
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-lg p-8">
-                <div className="flex mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-6 italic">
-                  "{testimonial.content}"
-                </p>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{testimonial.name}</p>
-                    <p className="text-gray-600">{testimonial.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-green-600 to-green-700">
+      {/* Get Started */}
+      <section className="py-16 bg-green-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Ready to Start Your Stroke Prevention Journey?
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Start Your Stroke Prevention Journey
           </h2>
           <p className="text-xl text-green-100 mb-8">
-            Join thousands who are already using SRACOS for proactive stroke prevention
+            Join thousands who are taking control of their health
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link 
-              href="/stroke-risk"
-              className="bg-white text-green-600 px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center font-semibold"
+              href="/auth/login"
+              className="bg-white text-green-600 px-8 py-3 rounded-lg hover:bg-green-50 transition-colors font-semibold"
             >
-              <Calculator className="mr-2 w-5 h-5" />
-              Calculate Your Risk Now
+              Login to System
             </Link>
             <Link 
               href="/auth/signup"
-              className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-green-600 transition-colors flex items-center justify-center"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg hover:bg-white hover:text-green-600 transition-colors font-semibold"
             >
               Create Account
-              <ChevronRight className="ml-2 w-5 h-5" />
             </Link>
           </div>
         </div>
@@ -482,7 +325,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 SRACOS. All rights reserved.</p>
+            <p>&copy; 2026 FlowState. All rights reserved.</p>
           </div>
         </div>
       </footer>

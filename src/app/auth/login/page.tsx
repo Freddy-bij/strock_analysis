@@ -188,6 +188,7 @@ export default function LoginPage() {
         )
 
         if (isValid) {
+          localStorage.setItem('userEmail', formData.email)
           router.push(redirectUrl)
         } else {
           setError('Invalid email or password. Please try again.')
