@@ -223,6 +223,7 @@ export interface PatientDashboardStats {
     upcomingVaccinations: string[]
     medicationReminders: Medication[]
   }
+  healthScore: number
 }
 
 export interface DoctorDashboardStats {

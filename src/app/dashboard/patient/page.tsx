@@ -33,6 +33,32 @@ export default function PatientDashboard() {
   const router = useRouter()
   const { user, isAuthenticated, logout } = useAuth()
 
+  // Calculate health score based on available data
+  const calculateHealthScore = (appointments: Appointment[], prescriptions: Prescription[], records: MedicalRecord[]): number => {
+    let score = 75 // Base score
+    
+    // Bonus points for recent medical records (indicating regular care)
+    const recentRecords = records.filter(r => 
+      new Date(r.date) > new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+    ).length
+    score += Math.min(recentRecords * 3, 15) // Max 15 points for recent records
+    
+    // Bonus points for medication adherence
+    const activeMedications = prescriptions.filter(p => p.status === 'active').length
+    if (activeMedications > 0 && activeMedications <= 3) {
+      score += 10 // Good medication management
+    }
+    
+    // Bonus points for upcoming appointments (proactive care)
+    const upcomingAppointments = appointments.filter(a => 
+      new Date(a.date) >= new Date() && a.status !== 'cancelled'
+    ).length
+    score += Math.min(upcomingAppointments * 3, 9) // Max 9 points for appointments
+    
+    // Ensure score stays within 0-100 range
+    return Math.min(Math.max(score, 0), 100)
+  }
+
   useEffect(() => {
     fetchDashboardData()
   }, [])
@@ -58,7 +84,9 @@ export default function PatientDashboard() {
           medicationReminders: prescriptions
             .filter((p: Prescription) => p.status === 'active')
             .flatMap(p => p.medications)
-        }
+        },
+        // Calculate health score based on available data
+        healthScore: calculateHealthScore(appointments, prescriptions, records)
       })
     } catch (err) {
       setError('Failed to load dashboard data')
@@ -195,7 +223,7 @@ export default function PatientDashboard() {
               </div>
               <span className="text-sm text-gray-500">Health Score</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">85%</h3>
+            <h3 className="text-2xl font-bold text-gray-900">{stats?.healthScore || 0}%</h3>
             <p className="text-gray-600">Overall Health</p>
           </div>
         </div>
