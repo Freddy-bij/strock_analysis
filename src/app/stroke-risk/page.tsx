@@ -318,10 +318,8 @@ export default function StrokeRiskAssessmentPage() {
                   className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="">Select status</option>
-                  <option value="no">No diabetes</option>
-                  <option value="prediabetes">Prediabetes</option>
-                  <option value="type1">Type 1 Diabetes</option>
-                  <option value="type2">Type 2 Diabetes</option>
+                  <option value="no">No Diabetes</option>
+                  <option value="yes">Diabetes (Type 1 or Type 2)</option>
                 </select>
                 {errors.diabetesStatus && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -343,10 +341,9 @@ export default function StrokeRiskAssessmentPage() {
                   className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="">Select activity level</option>
-                  <option value="sedentary">Sedentary (little or no exercise)</option>
-                  <option value="light">Light activity (1-3 days/week)</option>
+                  <option value="low">Low activity (0-1 days/week)</option>
                   <option value="moderate">Moderate activity (3-5 days/week)</option>
-                  <option value="active">Very active (6-7 days/week)</option>
+                  <option value="high">High activity (6-7 days/week)</option>
                 </select>
                 {errors.physicalActivity && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
