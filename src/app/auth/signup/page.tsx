@@ -203,14 +203,10 @@ export default function SignupPage() {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
-    dateOfBirth: '',
     password: '',
     confirmPassword: '',
     specialization: '',
-    licenseNumber: '',
-    experience: '',
-    consultationFee: ''
+    licenseNumber: ''
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -230,19 +226,15 @@ export default function SignupPage() {
     setError('')
 
     try {
-      const userData = {
+      const userData: any = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        phone: formData.phone,
-        dateOfBirth: formData.dateOfBirth,
         password: formData.password,
         userType,
         ...(userType === 'doctor' && {
           specialization: formData.specialization,
-          licenseNumber: formData.licenseNumber,
-          experience: parseInt(formData.experience) || 0,
-          consultationFee: parseInt(formData.consultationFee) || 0
+          licenseNumber: formData.licenseNumber
         })
       }
 
@@ -516,7 +508,7 @@ export default function SignupPage() {
                   <>
                     <div>
                       <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-2">
-                        Specialization
+                        Specialization (e.g., Cardiologist, General Doctor)
                       </label>
                       <select
                         id="specialization"
@@ -540,7 +532,7 @@ export default function SignupPage() {
 
                     <div>
                       <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                        License Number
+                        License Number ✅ (IMPORTANT for trust)
                       </label>
                       <input
                         id="licenseNumber"
@@ -551,41 +543,6 @@ export default function SignupPage() {
                         onChange={handleChange}
                         className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
                         placeholder="Enter your medical license number"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
-                        Years of Experience
-                      </label>
-                      <input
-                        id="experience"
-                        name="experience"
-                        type="number"
-                        min="0"
-                        max="50"
-                        required
-                        value={formData.experience}
-                        onChange={handleChange}
-                        className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
-                        placeholder="Years of experience"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="consultationFee" className="block text-sm font-medium text-gray-700 mb-2">
-                        Consultation Fee ($)
-                      </label>
-                      <input
-                        id="consultationFee"
-                        name="consultationFee"
-                        type="number"
-                        min="0"
-                        required
-                        value={formData.consultationFee}
-                        onChange={handleChange}
-                        className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
-                        placeholder="Consultation fee"
                       />
                     </div>
                   </>
