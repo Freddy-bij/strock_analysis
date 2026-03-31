@@ -421,7 +421,7 @@ export default function SignupPage() {
                       required
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+                      className="block w-full text-gray-500 px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
                       placeholder="Enter your first name"
                     />
                   </div>
@@ -436,7 +436,7 @@ export default function SignupPage() {
                       required
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+                      className="block w-full text-gray-500 px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
                       placeholder="Enter your last name"
                     />
                   </div>
@@ -457,49 +457,8 @@ export default function SignupPage() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+                      className="block text-gray-500 w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
                       placeholder="Enter your email"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Phone className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      required
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-2">
-                    Date of Birth
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Calendar className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      id="dateOfBirth"
-                      name="dateOfBirth"
-                      type="date"
-                      required
-                      value={formData.dateOfBirth}
-                      onChange={handleChange}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -508,7 +467,7 @@ export default function SignupPage() {
                   <>
                     <div>
                       <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-2">
-                        Specialization (e.g., Cardiologist, General Doctor)
+                        Specialization 
                       </label>
                       <select
                         id="specialization"
@@ -516,7 +475,7 @@ export default function SignupPage() {
                         required
                         value={formData.specialization}
                         onChange={handleChange}
-                        className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-500 placeholder-gray-500"
+                        className="block w-full text-gray-500 px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500"
                       >
                         <option value="">Select your specialization</option>
                         <option value="neurology">Neurology</option>
@@ -532,7 +491,7 @@ export default function SignupPage() {
 
                     <div>
                       <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                        License Number ✅ (IMPORTANT for trust)
+                        License Number
                       </label>
                       <input
                         id="licenseNumber"
@@ -582,7 +541,7 @@ export default function SignupPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="confirmPassword" className="block text-sm  font-medium text-gray-700 mb-2">
                       Confirm Password
                     </label>
                     <div className="relative">
@@ -596,7 +555,7 @@ export default function SignupPage() {
                         required
                         value={formData.confirmPassword}
                         onChange={handleChange}
-                        className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+                        className="block w-full text-gray-500 pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
                         placeholder="Confirm your password"
                       />
                       <button
