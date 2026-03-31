@@ -176,27 +176,34 @@ export default function LoginPage() {
     setError('')
 
     try {
-      setTimeout(() => {
-        const validCredentials = [
-          { email: 'patient@demo.com', password: 'patient123' },
-          { email: 'doctor@demo.com', password: 'doctor123' },
-          { email: 'admin@demo.com', password: 'admin123' }
-        ]
+      const response = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      })
 
-        const isValid = validCredentials.some(
-          cred => cred.email === formData.email && cred.password === formData.password
-        )
+      const result = await response.json()
 
-        if (isValid) {
-          localStorage.setItem('userEmail', formData.email)
-          router.push(redirectUrl)
-        } else {
-          setError('Invalid email or password. Please try again.')
-        }
-        setIsLoading(false)
-      }, 1000)
-    } catch (err) {
-      setError('Login failed. Please try again.')
+      if (result.success) {
+        // Save token and user data
+        localStorage.setItem('token', result.token)
+        localStorage.setItem('user', JSON.stringify(result.user))
+        
+        // Redirect to specific dashboard based on user type
+        const dashboardPath = result.user.userType === 'doctor' ? '/dashboard/doctor' : '/dashboard/patient'
+        router.push(dashboardPath)
+      } else {
+        setError(result.error || 'Invalid email or password. Please try again.')
+      }
+    } catch (err: any) {
+      console.error('Login error:', err)
+      setError('Login failed. Please check your connection and try again.')
+    } finally {
       setIsLoading(false)
     }
   }
