@@ -11,6 +11,7 @@ import {
   Heart,
   Activity
 } from 'lucide-react'
+import SraCosLogo from '@/components/SraCosLogo'
 
 interface NavbarProps {
   isScrolled?: boolean
@@ -48,12 +49,11 @@ export default function Navbar({ isScrolled = false }: NavbarProps) {
         <div className="flex justify-between items-center py-5">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div className={`flex items-center space-x-2 ${
-              isScrolled ? 'text-gray-900' : 'text-white'
-            }`}>
-              <Heart className="w-8 h-8" />
-              <span className="text-xl font-bold">SraCos</span>
-            </div>
+            <SraCosLogo 
+              size="md" 
+              color={isScrolled ? '#10b981' : '#ffffff'}
+              className="font-bold"
+            />
           </div>
 
           {/* Navigation Links */}
