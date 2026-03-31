@@ -18,6 +18,8 @@ import {
   Filter
 } from 'lucide-react'
 import { Doctor, TimeSlot, AppointmentBookingForm } from '@/types'
+import { useAuth } from '@/hooks/useAuth'
+import UserAvatar from '@/components/UserAvatar'
 import { appointmentsAPI, patientsAPI } from '@/lib/api'
 
 export default function BookAppointment() {
@@ -30,6 +32,7 @@ export default function BookAppointment() {
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [specialization, setSpecialization] = useState('')
+  const { user } = useAuth()
   const [formData, setFormData] = useState<AppointmentBookingForm>({
     doctorId: '',
     date: '',
@@ -232,10 +235,7 @@ export default function BookAppointment() {
                 <span className="text-gray-600">Back to Dashboard</span>
               </Link>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-              <span className="text-sm font-medium text-gray-700">John Doe</span>
-            </div>
+            {user && <UserAvatar user={user} size="md" />}
           </div>
         </div>
       </header>

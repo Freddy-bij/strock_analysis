@@ -47,7 +47,7 @@ export default function DoctorStrokeRiskPage() {
     const mockData: PatientRiskData[] = [
       {
         id: '1',
-        patientName: 'John Doe',
+        patientName: 'Robert Johnson',
         patientId: 'P001',
         age: 65,
         riskLevel: 'high',
@@ -59,7 +59,7 @@ export default function DoctorStrokeRiskPage() {
       },
       {
         id: '2',
-        patientName: 'Jane Smith',
+        patientName: 'Maria Garcia',
         patientId: 'P002',
         age: 45,
         riskLevel: 'medium',
