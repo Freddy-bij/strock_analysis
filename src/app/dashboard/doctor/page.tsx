@@ -27,6 +27,7 @@ import {
 import { DoctorDashboardStats, Appointment, Prescription, Patient } from '@/types'
 import { doctorsAPI } from '@/lib/api'
 import { useAuth } from '@/hooks/useAuth'
+import UserAvatar from '@/components/UserAvatar'
 
 export default function DoctorDashboard() {
   const [stats, setStats] = useState<DoctorDashboardStats | null>(null)
@@ -145,10 +146,7 @@ export default function DoctorDashboard() {
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-700">Dr. Smith</span>
-              </div>
+              {user && <UserAvatar user={user} size="md" />}
               <button 
                 onClick={handleLogout}
                 className="text-gray-600 hover:text-red-600"
@@ -166,7 +164,10 @@ export default function DoctorDashboard() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome back, Dr. {user?.lastName || user?.firstName || 'User'}!
           </h1>
-          <p className="text-gray-600">You have {stats?.todayAppointments.length || 0} appointments today</p>
+          <p className="text-gray-600">
+            {user?.specialization ? `${user.specialization} • ` : ''}
+            You have {stats?.todayAppointments.length || 0} appointments today
+          </p>
         </div>
 
         {/* Quick Stats */}

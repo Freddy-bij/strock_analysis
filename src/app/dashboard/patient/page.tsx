@@ -24,6 +24,7 @@ import {
 import { PatientDashboardStats, Appointment, Prescription, MedicalRecord } from '@/types'
 import { patientsAPI } from '@/lib/api'
 import { useAuth } from '@/hooks/useAuth'
+import UserAvatar from '@/components/UserAvatar'
 
 export default function PatientDashboard() {
   const [stats, setStats] = useState<PatientDashboardStats | null>(null)
@@ -131,10 +132,7 @@ export default function PatientDashboard() {
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-700">John Doe</span>
-              </div>
+              {user && <UserAvatar user={user} size="md" />}
               <button 
                 onClick={handleLogout}
                 className="text-gray-600 hover:text-red-600"

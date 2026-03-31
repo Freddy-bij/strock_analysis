@@ -8,6 +8,8 @@ interface User {
   firstName?: string
   lastName?: string
   userType: 'patient' | 'doctor' | 'admin'
+  specialization?: string
+  status?: string
 }
 
 export function useAuth() {
