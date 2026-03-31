@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { authAPI } from '@/lib/api'
 
 export default function DashboardPage() {
   const [userRole, setUserRole] = useState<string | null>(null)
@@ -12,16 +11,21 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkUserRole = async () => {
       try {
-        // In a real app, this would check the user's role from token or API
-        const token = localStorage.getItem('token')
+        // Get user info from localStorage (set during login)
+        const userEmail = localStorage.getItem('userEmail')
         
-        if (!token) {
+        if (!userEmail) {
           router.push('/auth/login')
           return
         }
 
-        // Mock role check - in real app, decode JWT or call API
-        const mockUserRole = 'patient' // This would come from token/API
+        // Determine role based on email pattern
+        let mockUserRole = 'patient'
+        if (userEmail.includes('doctor')) {
+          mockUserRole = 'doctor'
+        } else if (userEmail.includes('admin')) {
+          mockUserRole = 'admin'
+        }
         
         setUserRole(mockUserRole)
         
@@ -31,7 +35,7 @@ export default function DashboardPage() {
         } else if (mockUserRole === 'doctor') {
           router.push('/dashboard/doctor')
         } else if (mockUserRole === 'admin') {
-          router.push('/dashboard/admin')
+          router.push('/dashboard/doctor') // Admin uses doctor dashboard for now
         }
       } catch (error) {
         console.error('Error checking user role:', error)
