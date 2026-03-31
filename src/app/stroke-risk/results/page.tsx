@@ -272,14 +272,6 @@ export default function StrokeRiskResultsPage() {
           </button>
         </div>
 
-        {/* Important Disclaimer */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-start space-x-3">
-            <AlertTriangle className="w-5 h-5 text-blue-600 mt-0.5" />
-            <div>
-              <h4 className="font-medium text-blue-900 mb-2">Medical Disclaimer</h4>
-              <p className="text-sm text-blue-800">
-                This stroke risk assessment is for educational purposes only and should not replace professional medical advice. 
                 Please consult with your healthcare provider for proper diagnosis, treatment, and personalized medical recommendations.
               </p>
             </div>
@@ -310,6 +302,20 @@ export default function StrokeRiskResultsPage() {
             </div>
           </div>
         )}
+
+        {/* Medical Disclaimer */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+          <div className="flex items-start space-x-3">
+            <AlertTriangle className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-blue-900 mb-2">Medical Disclaimer</h4>
+              <p className="text-sm text-blue-800">
+                This stroke risk assessment is for educational purposes only and should not replace professional medical advice. 
+                Please consult with your healthcare provider for proper diagnosis, treatment, and personalized medical recommendations.
+              </p>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   )
