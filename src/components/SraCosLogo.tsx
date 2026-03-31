@@ -34,7 +34,7 @@ export default function SraCosLogo({
   // Dynamic colors based on scroll state
   const primaryColor = isScrolled ? '#000000' : '#10b981' // black when scrolled, green when not
   const secondaryColor = isScrolled ? '#ffffff' : '#ffffff' // always white
-  const accentColor = isScrolled ? '#10b981' : '#10b981' // always green for accent
+  const accentColor = isScrolled ? '#dc2626' : '#dc2626' // red for stroke risk alert
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
@@ -44,48 +44,32 @@ export default function SraCosLogo({
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Analytics brain shape */}
+        {/* Brain shape for stroke analysis */}
         <path 
           d="M50 20C35 20 25 30 25 45C25 55 30 65 40 70C45 75 55 75 60 70C70 65 75 55 75 45C75 30 65 20 50 20Z" 
           fill={primaryColor}
           opacity="0.9"
         />
         
-        {/* Strong analytics grid pattern */}
-        <g opacity="0.3">
-          <path d="M30 30H70M30 35H70M30 40H70M30 45H70M30 50H70M30 55H70M30 60H70" stroke={secondaryColor} strokeWidth="1"/>
-          <path d="M35 25V65M45 25V65M55 25V65M65 25V65" stroke={secondaryColor} strokeWidth="1"/>
+        {/* Stroke analysis blood vessels */}
+        <g opacity="0.7">
+          <path d="M30 35C35 30 40 35 45 30C50 25 55 30 60 35C65 40 70 35 70 35" 
+            stroke={accentColor} strokeWidth="2" fill="none"/>
+          <path d="M30 50C35 45 40 50 45 45C50 40 55 45 60 50C65 55 70 50 70 50" 
+            stroke={accentColor} strokeWidth="2" fill="none"/>
+          <path d="M30 65C35 60 40 65 45 60C50 55 55 60 60 65C65 70 70 65 70 65" 
+            stroke={accentColor} strokeWidth="2" fill="none"/>
         </g>
         
-        {/* Analytics data points */}
-        <circle cx="40" cy="35" r="3" fill={accentColor}/>
-        <circle cx="50" cy="30" r="3" fill={accentColor}/>
-        <circle cx="60" cy="35" r="3" fill={accentColor}/>
-        <circle cx="45" cy="45" r="3" fill={accentColor}/>
-        <circle cx="55" cy="45" r="3" fill={accentColor}/>
-        <circle cx="50" cy="55" r="3" fill={accentColor}/>
+        {/* Stroke risk indicators */}
+        <circle cx="35" cy="35" r="4" fill={accentColor} opacity="0.8"/>
+        <circle cx="65" cy="35" r="4" fill={accentColor} opacity="0.8"/>
+        <circle cx="50" cy="50" r="5" fill={accentColor} opacity="0.9"/>
         
-        {/* Strong analytics connection lines */}
-        <path d="M40 35L50 30L60 35M40 35L45 45M60 35L55 45M45 45L50 55L55 45" 
-          stroke={accentColor} strokeWidth="2" opacity="0.8"/>
+        {/* Blocked vessel indicator */}
+        <rect x="47" y="48" width="6" height="4" fill={secondaryColor} opacity="0.8"/>
         
-        {/* Heart pulse for health monitoring */}
-        <path 
-          d="M20 50C20 45 25 40 30 45C35 50 40 55 45 50" 
-          fill="none" 
-          stroke={accentColor} 
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        <path 
-          d="M55 50C60 55 65 50 70 45C75 40 80 45 80 50" 
-          fill="none" 
-          stroke={accentColor} 
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        
-        {/* Strong analytics center symbol */}
+        {/* Stroke analysis center - brain with warning */}
         <circle cx="50" cy="45" r="8" fill={secondaryColor} opacity="0.9"/>
         <path 
           d="M46 45H54M50 41V49" 
@@ -94,9 +78,35 @@ export default function SraCosLogo({
           strokeLinecap="round"
         />
         
-        {/* Data flow indicators */}
-        <path d="M25 25L30 30M75 25L70 30M25 65L30 60M75 65L70 60" 
-          stroke={accentColor} strokeWidth="1.5" opacity="0.6"/>
+        {/* ECG/EKG waveform for stroke monitoring */}
+        <path 
+          d="M15 50L20 50L22 45L24 55L26 40L28 60L30 50L35 50" 
+          stroke={accentColor} 
+          strokeWidth="2" 
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path 
+          d="M65 50L70 50L72 45L74 55L76 40L78 60L80 50L85 50" 
+          stroke={accentColor} 
+          strokeWidth="2" 
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        
+        {/* Risk level indicators */}
+        <g opacity="0.6">
+          <circle cx="25" cy="25" r="2" fill={accentColor}/>
+          <circle cx="75" cy="25" r="2" fill={accentColor}/>
+          <circle cx="25" cy="75" r="2" fill={accentColor}/>
+          <circle cx="75" cy="75" r="2" fill={accentColor}/>
+        </g>
+        
+        {/* Analysis connections */}
+        <path d="M25 25L35 35M75 25L65 35M25 75L35 65M75 75L65 65" 
+          stroke={accentColor} strokeWidth="1" opacity="0.4"/>
       </svg>
       
       {showText && (
