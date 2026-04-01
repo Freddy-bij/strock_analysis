@@ -72,6 +72,17 @@ export const authAPI = {
     const response = await api.get('/auth/me')
     return response.data
   },
+
+  logout: async () => {
+    try {
+      const response = await api.post('/auth/logout')
+      return response.data
+    } catch (error) {
+      // Even if backend logout fails, we should clear local storage
+      console.warn('Backend logout failed, clearing local storage only')
+      return { success: true, message: 'Logout successful (client-side only)' }
+    }
+  },
 }
 
 // Patients API
@@ -110,10 +121,24 @@ export const patientsAPI = {
   
   getAppointments: async () => {
     try {
+      console.log('=== getAppointments API CALL START ===')
       const response = await api.get('/appointments/patient')
-      return response.data
+      console.log('Raw axios response:', response)
+      console.log('Response data:', response.data)
+      console.log('Response data type:', typeof response.data)
+      console.log('Response data isArray:', Array.isArray(response.data))
+      console.log('Response isArray:', Array.isArray(response))
+      
+      // Handle both direct array and wrapped response formats
+      const appointments = Array.isArray(response.data) ? response.data : response.data || []
+      console.log('Final appointments result:', appointments)
+      console.log('Final appointments type:', typeof appointments)
+      console.log('Final appointments isArray:', Array.isArray(appointments))
+      
+      return appointments
     } catch (error) {
       console.warn('API endpoint not available, returning mock data')
+      console.log('Error details:', error)
       return [
         {
           id: '1',
@@ -363,28 +388,47 @@ export const doctorsAPI = {
       return response.data
     } catch (error) {
       console.warn('API endpoint not available, returning mock data')
+      // Return mock data that matches the backend structure
       return {
         success: true,
         data: [
           {
-            id: '1',
+            _id: '1',
+            patientId: '1',
+            patientName: 'John Doe',
+            email: 'john.doe@example.com',
             firstName: 'John',
             lastName: 'Doe',
-            email: 'john.doe@example.com',
             phone: '+1234567890',
             dateOfBirth: '1985-01-01',
             role: 'patient',
-            status: 'active'
+            status: 'active',
+            age: 39,
+            riskScore: 15,
+            riskLevel: 'low',
+            criticalFactors: [],
+            lastAssessment: '2024-03-15',
+            nextCheckup: '2024-06-15',
+            trend: 'stable'
           },
           {
-            id: '2',
+            _id: '2',
+            patientId: '2',
+            patientName: 'Jane Smith',
+            email: 'jane.smith@example.com',
             firstName: 'Jane',
             lastName: 'Smith',
-            email: 'jane.smith@example.com',
             phone: '+1234567891',
             dateOfBirth: '1990-05-15',
             role: 'patient',
-            status: 'active'
+            status: 'active',
+            age: 33,
+            riskScore: 45,
+            riskLevel: 'moderate',
+            criticalFactors: ['hypertension', 'smoking'],
+            lastAssessment: '2024-03-10',
+            nextCheckup: '2024-04-10',
+            trend: 'increasing'
           }
         ]
       }
@@ -393,10 +437,23 @@ export const doctorsAPI = {
 
   getAppointments: async () => {
     try {
+      console.log('=== doctorsAPI.getAppointments API CALL START ===')
       const response = await api.get('/appointments/doctor')
-      return response.data
+      console.log('Raw axios response:', response)
+      console.log('Response data:', response.data)
+      console.log('Response data type:', typeof response.data)
+      console.log('Response data isArray:', Array.isArray(response.data))
+      
+      // Handle both direct array and wrapped response formats
+      const appointments = Array.isArray(response.data) ? response.data : response.data || []
+      console.log('Final appointments result:', appointments)
+      console.log('Final appointments type:', typeof appointments)
+      console.log('Final appointments isArray:', Array.isArray(appointments))
+      
+      return appointments
     } catch (error) {
       console.warn('API endpoint not available, returning mock data')
+      console.log('Error details:', error)
       return [
         {
           id: '1',
@@ -451,19 +508,9 @@ export const doctorsAPI = {
       // Return mock data for development
       return [
         {
-          id: '1',
-          date: '2024-03-15',
-          patient: {
-            id: '1',
-            firstName: 'John',
-            lastName: 'Doe'
-          },
-          doctor: {
-            id: '1',
-            firstName: 'Dr. Sarah',
-            lastName: 'Johnson',
-            specialization: 'General Practice'
-          },
+          _id: '1',
+          patientId: { _id: '1', firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com' },
+          doctorId: { _id: '1', firstName: 'Dr. Sarah', lastName: 'Johnson', specialization: 'General Practice' },
           medications: [
             {
               name: 'Amoxicillin',
@@ -472,22 +519,13 @@ export const doctorsAPI = {
               duration: '7 days'
             }
           ],
+          prescribedAt: '2024-03-15',
           status: 'active'
         },
         {
-          id: '2',
-          date: '2024-02-20',
-          patient: {
-            id: '2',
-            firstName: 'Jane',
-            lastName: 'Smith'
-          },
-          doctor: {
-            id: '2',
-            firstName: 'Dr. Michael',
-            lastName: 'Brown',
-            specialization: 'Cardiology'
-          },
+          _id: '2',
+          patientId: { _id: '2', firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@example.com' },
+          doctorId: { _id: '2', firstName: 'Dr. Michael', lastName: 'Brown', specialization: 'Cardiology' },
           medications: [
             {
               name: 'Lisinopril',
@@ -496,6 +534,7 @@ export const doctorsAPI = {
               duration: '30 days'
             }
           ],
+          prescribedAt: '2024-02-20',
           status: 'completed'
         }
       ]

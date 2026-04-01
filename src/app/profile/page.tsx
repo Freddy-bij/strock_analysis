@@ -25,6 +25,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import UserAvatar from '@/components/UserAvatar'
+import { patientsAPI } from '@/lib/api'
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -46,18 +47,55 @@ export default function ProfilePage() {
   })
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        email: user.email || '',
-        phone: '',
-        dateOfBirth: '',
-        address: '',
-        emergencyContact: '',
-        emergencyPhone: ''
-      })
+    const loadProfileData = async () => {
+      if (user) {
+        try {
+          // Fetch latest profile data from backend
+          const profileResponse = await patientsAPI.getProfile()
+          
+          if (profileResponse.success && profileResponse.data) {
+            const profileData = profileResponse.data
+            setFormData({
+              firstName: profileData.firstName || user.firstName || '',
+              lastName: profileData.lastName || user.lastName || '',
+              email: profileData.email || user.email || '',
+              phone: profileData.phone || '',
+              dateOfBirth: profileData.dateOfBirth || '',
+              address: profileData.address || '',
+              emergencyContact: profileData.emergencyContact || '',
+              emergencyPhone: profileData.emergencyPhone || ''
+            })
+          } else {
+            // Fallback to user data from auth
+            setFormData({
+              firstName: user.firstName || '',
+              lastName: user.lastName || '',
+              email: user.email || '',
+              phone: '',
+              dateOfBirth: '',
+              address: '',
+              emergencyContact: '',
+              emergencyPhone: ''
+            })
+          }
+        } catch (error) {
+          console.error('Failed to load profile data:', error)
+          // Fallback to user data from auth
+          setFormData({
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            email: user.email || '',
+            phone: '',
+            dateOfBirth: '',
+            address: '',
+            emergencyContact: '',
+            emergencyPhone: ''
+          })
+        }
+      }
     }
+
+    loadProfileData()
   }, [user])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -74,21 +112,46 @@ export default function ProfilePage() {
     setMessage('')
 
     try {
-      // Simulate API call to update profile
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Prepare update data with only the fields that have changed
+      const updateData: any = {}
       
-      // Update localStorage user data
-      const updatedUser = {
-        ...user,
-        firstName: formData.firstName,
-        lastName: formData.lastName
-      }
-      localStorage.setItem('user', JSON.stringify(updatedUser))
+      // Only include fields that are different from original user data
+      if (formData.firstName !== user?.firstName) updateData.firstName = formData.firstName
+      if (formData.lastName !== user?.lastName) updateData.lastName = formData.lastName
+      if (formData.phone !== (user as any)?.phone) updateData.phone = formData.phone
+      if (formData.dateOfBirth !== (user as any)?.dateOfBirth) updateData.dateOfBirth = formData.dateOfBirth
+      if (formData.address !== (user as any)?.address) updateData.address = formData.address
+      if (formData.emergencyContact !== (user as any)?.emergencyContact) updateData.emergencyContact = formData.emergencyContact
+      if (formData.emergencyPhone !== (user as any)?.emergencyPhone) updateData.emergencyPhone = formData.emergencyPhone
 
-      setMessage('Profile updated successfully!')
-      setMessageType('success')
-      setIsEditing(false)
+      // Call backend API to update profile
+      const response = await patientsAPI.updateProfile(updateData)
+
+      if (response.success) {
+        // Update localStorage user data
+        const updatedUser = {
+          ...user,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          dateOfBirth: formData.dateOfBirth
+        }
+        localStorage.setItem('user', JSON.stringify(updatedUser))
+
+        setMessage('Profile updated successfully!')
+        setMessageType('success')
+        setIsEditing(false)
+        
+        // Reload profile data to get the latest from backend
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
+      } else {
+        setMessage(response.message || 'Failed to update profile')
+        setMessageType('error')
+      }
     } catch (error) {
+      console.error('Profile update error:', error)
       setMessage('Failed to update profile. Please try again.')
       setMessageType('error')
     } finally {
@@ -114,9 +177,15 @@ export default function ProfilePage() {
     setMessage('')
   }
 
-  const handleLogout = () => {
-    logout()
-    router.push('/')
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.push('/')
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Even if logout fails, redirect to home
+      router.push('/')
+    }
   }
 
   if (!user) {

@@ -12,7 +12,8 @@ import {
   ChevronRight,
   AlertCircle,
   Download,
-  FileText
+  FileText,
+  Plus
 } from 'lucide-react'
 import { doctorsAPI } from '@/lib/api'
 import { Prescription } from '@/types'
@@ -32,8 +33,10 @@ export default function DoctorPrescriptionsPage() {
   const fetchPrescriptions = async () => {
     try {
       setLoading(true)
-      const data = await doctorsAPI.getPrescriptions() as Prescription[]
-      setPrescriptions(data)
+      const response = await doctorsAPI.getPrescriptions() as any
+      // Handle both direct array and wrapped response formats
+      const prescriptions = Array.isArray(response) ? response : response.data || []
+      setPrescriptions(prescriptions)
     } catch (error) {
       setError('Failed to load prescriptions')
       console.error('Error fetching prescriptions:', error)
@@ -42,10 +45,12 @@ export default function DoctorPrescriptionsPage() {
     }
   }
 
-  const filteredPrescriptions = prescriptions.filter(prescription => 
-    `${prescription.doctor?.firstName} ${prescription.doctor?.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (filterStatus === 'all' || prescription.status === filterStatus)
-  )
+  const filteredPrescriptions = prescriptions.filter(prescription => {
+    const patient = typeof prescription.patientId === 'object' ? prescription.patientId : prescription.patient;
+    const patientName = patient ? `${patient.firstName} ${patient.lastName}` : '';
+    return patientName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+           (filterStatus === 'all' || prescription.status === filterStatus);
+  })
 
   const downloadPrescription = async (prescriptionId: string) => {
     try {
@@ -103,6 +108,13 @@ export default function DoctorPrescriptionsPage() {
             </div>
             <div className="flex items-center space-x-4">
               <h1 className="text-xl font-semibold text-gray-900">Prescriptions</h1>
+              <Link 
+                href="/dashboard/doctor/prescriptions/create"
+                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create New</span>
+              </Link>
             </div>
           </div>
         </div>
@@ -161,7 +173,7 @@ export default function DoctorPrescriptionsPage() {
           ) : (
             <div className="divide-y">
               {filteredPrescriptions.map((prescription) => (
-                <div key={prescription.id} className="p-6 hover:bg-gray-50">
+                <div key={prescription._id || prescription.id} className="p-6 hover:bg-gray-50">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4">
                       <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -169,14 +181,26 @@ export default function DoctorPrescriptionsPage() {
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">
-                          Prescription for {prescription.patient?.firstName} {prescription.patient?.lastName}
+                          Prescription for {
+                            typeof prescription.patientId === 'object' 
+                              ? `${prescription.patientId.firstName} ${prescription.patientId.lastName}`
+                              : prescription.patient 
+                                ? `${prescription.patient.firstName} ${prescription.patient.lastName}`
+                                : 'Unknown Patient'
+                          }
                         </p>
                         <p className="text-sm text-gray-600">
-                          Dr. {prescription.doctor?.firstName} {prescription.doctor?.lastName}
+                          Dr. {
+                            typeof prescription.doctorId === 'object' 
+                              ? `${prescription.doctorId.firstName} ${prescription.doctorId.lastName}`
+                              : prescription.doctor 
+                                ? `${prescription.doctor.firstName} ${prescription.doctor.lastName}`
+                                : 'Unknown Doctor'
+                          }
                         </p>
                         <div className="flex items-center text-sm text-gray-500">
                           <Calendar className="w-4 h-4 mr-1" />
-                          {new Date(prescription.date).toLocaleDateString()}
+                          {new Date(prescription.prescribedAt).toLocaleDateString()}
                         </div>
                       </div>
                     </div>
@@ -191,7 +215,7 @@ export default function DoctorPrescriptionsPage() {
                       </span>
                       
                       <button
-                        onClick={() => downloadPrescription(prescription.id)}
+                        onClick={() => downloadPrescription(prescription._id || prescription.id || '')}
                         className="text-green-600 hover:text-green-500 text-sm font-medium flex items-center"
                       >
                         <Download className="w-4 h-4 mr-1" />

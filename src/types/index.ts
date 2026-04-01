@@ -63,9 +63,10 @@ export interface TimeSlot {
 
 // Prescription Types
 export interface Prescription {
-  id: string
-  patientId: string
-  doctorId: string
+  _id?: string
+  id?: string
+  patientId: string | Patient
+  doctorId: string | Doctor
   medications: Medication[]
   notes?: string
   prescribedAt: string

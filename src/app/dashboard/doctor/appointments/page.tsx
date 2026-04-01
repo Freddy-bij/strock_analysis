@@ -33,7 +33,8 @@ export default function DoctorAppointmentsPage() {
     try {
       setLoading(true)
       const data = await doctorsAPI.getAppointments() as Appointment[]
-      setAppointments(data)
+      const appointmentsArray = Array.isArray(data) ? data : []
+      setAppointments(appointmentsArray)
     } catch (error) {
       setError('Failed to load appointments')
       console.error('Error fetching appointments:', error)

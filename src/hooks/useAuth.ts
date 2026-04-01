@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { authAPI } from '@/lib/api'
 
 interface User {
   id: string
@@ -54,11 +55,19 @@ export function useAuth() {
     return () => window.removeEventListener('storage', handleStorageChange)
   }, [])
 
-  const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    setIsAuthenticated(false)
-    setUser(null)
+  const logout = async () => {
+    try {
+      // Call backend logout API
+      await authAPI.logout()
+    } catch (error) {
+      console.warn('Backend logout failed, proceeding with client-side logout')
+    } finally {
+      // Always clear local storage and state
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      setIsAuthenticated(false)
+      setUser(null)
+    }
   }
 
   const getDashboardPath = () => {

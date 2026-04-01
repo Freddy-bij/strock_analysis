@@ -23,9 +23,10 @@ import {
   AlertTriangle
 } from 'lucide-react'
 import { PatientDashboardStats, Appointment, Prescription, MedicalRecord } from '@/types'
-import { patientsAPI } from '@/lib/api'
+import { patientsAPI, authAPI } from '@/lib/api'
 import { useAuth } from '@/hooks/useAuth'
 import UserAvatar from '@/components/UserAvatar'
+import SraCosLogo from '@/components/SraCosLogo'
 
 interface StrokeRiskData {
   riskScore: number
@@ -42,30 +43,9 @@ export default function PatientDashboard() {
   const router = useRouter()
   const { user, isAuthenticated, logout } = useAuth()
 
-  // Calculate health score based on available data
-  const calculateHealthScore = (appointments: any[], prescriptions: any[], records: any[]): number => {
-    let score = 75 // Base score
-    
-    // Bonus points for recent medical records (indicating regular care)
-    const recentRecords = records.filter((r: any) => 
-      new Date(r.date) > new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
-    ).length
-    score += Math.min(recentRecords * 3, 15) // Max 15 points for recent records
-    
-    // Bonus points for medication adherence
-    const activeMedications = prescriptions.filter((p: any) => p.status === 'active').length
-    if (activeMedications > 0 && activeMedications <= 3) {
-      score += 10 // Good medication management
-    }
-    
-    // Bonus points for upcoming appointments (proactive care)
-    const upcomingAppointments = appointments.filter((a: any) => 
-      new Date(a.date) >= new Date() && a.status !== 'cancelled'
-    ).length
-    score += Math.min(upcomingAppointments * 3, 9) // Max 9 points for appointments
-    
-    // Ensure score stays within 0-100 range
-    return Math.min(Math.max(score, 0), 100)
+  // Calculate health score based on available data - TEMPORARILY DISABLED
+  const calculateHealthScore = (appointments: any, prescriptions: any, records: any): number => {
+    return 75
   }
 
   useEffect(() => {
@@ -75,13 +55,88 @@ export default function PatientDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
-      const [appointments, prescriptions, records] = await Promise.all([
-        patientsAPI.getAppointments(),
-        patientsAPI.getPrescriptions(),
-        patientsAPI.getMedicalHistory()
-      ])
-
-      // Load stroke risk data from backend API
+      console.log('=== STARTING DASHBOARD DATA FETCH ===')
+      
+      // Set minimal safe data first to prevent crashes
+      const safeData = {
+        upcomingAppointments: [],
+        recentPrescriptions: [],
+        medicalRecords: [],
+        healthMetrics: {
+          lastCheckup: '',
+          upcomingVaccinations: [],
+          medicationReminders: []
+        },
+        healthScore: 75
+      }
+      
+      setStats(safeData)
+      
+      // Now try to get real data with maximum safety
+      try {
+        console.log('Making API calls...')
+        
+        // First, let's just test the API call without any processing
+        const appointmentsResult = await patientsAPI.getAppointments()
+        console.log('RAW Appointments API result:', appointmentsResult)
+        console.log('Type of result:', typeof appointmentsResult)
+        console.log('Is array?:', Array.isArray(appointmentsResult))
+        
+        // Try to access the filter method directly
+        try {
+          const testFilter = (appointmentsResult as any).filter
+          console.log('Filter method exists:', typeof testFilter === 'function')
+        } catch (filterError) {
+          console.error('Error accessing filter method:', filterError)
+        }
+        
+        // Check if the result has a filter method
+        if (appointmentsResult && typeof (appointmentsResult as any).filter === 'function') {
+          console.log('Appointments result has filter method')
+        } else {
+          console.log('Appointments result does NOT have filter method')
+        }
+        
+        // Ensure we have an array
+        const appointmentsArray = Array.isArray(appointmentsResult) ? appointmentsResult : []
+        
+        // Update with safe appointments data
+        setStats(prev => prev ? {
+          ...prev,
+          upcomingAppointments: appointmentsArray.slice(0, 3) as unknown as Appointment[]
+        } : safeData)
+        
+      } catch (apiError) {
+        console.error('Appointments API failed:', apiError)
+        console.error('API Error details:', (apiError as any).stack)
+      }
+      
+      // Try other APIs separately
+      try {
+        const prescriptionsResult = await patientsAPI.getPrescriptions()
+        const prescriptionsArray = Array.isArray(prescriptionsResult) ? prescriptionsResult : []
+        
+        setStats(prev => prev ? {
+          ...prev,
+          recentPrescriptions: prescriptionsArray.slice(0, 3) as unknown as Prescription[]
+        } : safeData)
+      } catch (apiError) {
+        console.error('Prescriptions API failed:', apiError)
+      }
+      
+      try {
+        const recordsResult = await patientsAPI.getMedicalHistory()
+        const recordsArray = Array.isArray(recordsResult) ? recordsResult : []
+        
+        setStats(prev => prev ? {
+          ...prev,
+          medicalRecords: recordsArray.slice(0, 3) as unknown as MedicalRecord[]
+        } : safeData)
+      } catch (apiError) {
+        console.error('Medical history API failed:', apiError)
+      }
+      
+      // Load stroke risk data
       try {
         const token = localStorage.getItem('token')
         if (token) {
@@ -93,59 +148,65 @@ export default function PatientDashboard() {
           })
           
           if (response.ok) {
-            const result = await response.json()
-            if (result.success && result.data) {
-              setStrokeRiskData({
-                riskScore: result.data.riskScore,
-                riskLevel: result.data.riskLevel,
-                lastAssessmentDate: result.data.assessmentDate,
-                recommendations: result.data.recommendations
-              })
-            }
+            const strokeRiskResults = await response.json()
+            const results = JSON.parse(strokeRiskResults)
+            setStrokeRiskData({
+              riskScore: results.riskScore,
+              riskLevel: results.riskLevel,
+              lastAssessmentDate: results.assessmentDate,
+              recommendations: results.recommendations
+            })
           }
         }
-      } catch (strokeRiskError) {
-        console.log('Stroke risk data not available from backend')
-        // Fallback to sessionStorage if backend fails
-        const strokeRiskResults = sessionStorage.getItem('strokeRiskResults')
-        if (strokeRiskResults) {
-          const results = JSON.parse(strokeRiskResults)
-          setStrokeRiskData({
-            riskScore: results.riskScore,
-            riskLevel: results.riskLevel,
-            lastAssessmentDate: results.assessmentDate,
-            recommendations: results.recommendations
-          })
-        }
+      } catch (strokeError) {
+        console.error('Stroke risk API failed:', strokeError)
       }
-
-      setStats({
-        upcomingAppointments: (appointments as any[]).filter((a: any) => 
-          new Date(a.date) >= new Date() && a.status !== 'cancelled'
-        ).slice(0, 3),
-        recentPrescriptions: (prescriptions as any[]).slice(0, 3),
-        medicalRecords: (records as any[]).slice(0, 3),
-        healthMetrics: {
-          lastCheckup: (records as any[]).find((r: any) => r.type === 'diagnosis')?.date || '',
-          upcomingVaccinations: [],
-          medicationReminders: (prescriptions as any[])
-            .filter((p: any) => p.status === 'active')
-            .flatMap((p: any) => p.medications || [])
-        },
-        // Calculate health score based on available data
-        healthScore: calculateHealthScore(appointments as any[], prescriptions as any[], records as any[])
-      })
+      
+      // TEMPORARILY DISABLED FOR DEBUGGING
+      // Update health score separately
+      /*
+      try {
+        const currentStats = stats
+        if (currentStats) {
+          const healthScore = calculateHealthScore(
+            currentStats.upcomingAppointments,
+            currentStats.recentPrescriptions,
+            currentStats.medicalRecords
+          )
+          setStats(prev => prev ? { ...prev, healthScore } : null)
+        }
+      } catch (scoreError) {
+        console.error('Health score calculation failed:', scoreError)
+      }
+      */
+      
     } catch (err) {
-      setError('Failed to load dashboard data')
       console.error('Dashboard error:', err)
+      setError('Failed to load dashboard data')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    router.push('/auth/login')
+  const handleLogout = async () => {
+    try {
+      // Call backend logout API
+      await authAPI.logout()
+      
+      // Clear local storage regardless of backend response
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      
+      // Redirect to login
+      router.push('/auth/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      
+      // Even if backend logout fails, clear local storage and redirect
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      router.push('/auth/login')
+    }
   }
 
   if (loading) {
@@ -180,13 +241,11 @@ export default function PatientDashboard() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-
+        auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2">
-                <Heart className="w-8 h-8 text-green-600" />
-                <span className="text-2xl font-bold text-gray-900">SRACOS</span>
-              </Link>
+             <SraCosLogo size="lg" showText={true} />
             </div>
             <nav className="hidden md:flex items-center space-x-8">
               <Link href="/dashboard/patient/appointments" className="flex items-center text-gray-600 hover:text-green-600">

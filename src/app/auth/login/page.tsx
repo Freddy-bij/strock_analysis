@@ -151,6 +151,7 @@ function MedicalIllustration() {
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
+  const [userType, setUserType] = useState<'patient' | 'doctor'>('patient')
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -190,6 +191,12 @@ export default function LoginPage() {
       const result = await response.json()
 
       if (result.success) {
+        // Validate that the selected role matches the user's actual role
+        if (result.user.userType !== userType) {
+          setError(`Invalid role selection. This account is registered as a ${result.user.userType}, not as a ${userType}.`)
+          return
+        }
+
         // Save token and user data
         localStorage.setItem('token', result.token)
         localStorage.setItem('user', JSON.stringify(result.user))
@@ -208,7 +215,7 @@ export default function LoginPage() {
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
@@ -310,6 +317,38 @@ export default function LoginPage() {
             </div>
 
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Login As
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setUserType('patient')}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    userType === 'patient'
+                      ? 'border-green-500 bg-green-50 text-green-700'
+                      : 'border-gray-200 hover:border-gray-500'
+                  }`}
+                >
+                  <User className="w-8 h-8 mx-auto mb-2" />
+                  <span className="block font-medium">Patient</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserType('doctor')}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    userType === 'doctor'
+                      ? 'border-green-500 bg-green-50 text-green-700'
+                      : 'border-gray-200 hover:border-gray-500'
+                  }`}
+                >
+                  <Lock className="w-8 h-8 mx-auto mb-2" />
+                  <span className="block font-medium">Doctor</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
@@ -374,16 +413,6 @@ export default function LoginPage() {
                 Sign up
               </Link>
             </p>
-          </div>
-
-          {/* Demo Credentials */}
-          <div className="mt-8 p-4 bg-gray-50 text-gray-500 rounded-lg">
-            <p className="text-xs font-bold mb-2">Demo Credentials:</p>
-            <div className="text-xs space-y-1">
-              <p><span className="font-medium">Patient:</span> patient@demo.com / patient123</p>
-              <p><span className="font-medium">Doctor:</span> doctor@demo.com / doctor123</p>
-              <p><span className="font-medium">Admin:</span> admin@demo.com / admin123</p>
-            </div>
           </div>
         </div>
       </div>

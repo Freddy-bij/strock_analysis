@@ -33,10 +33,17 @@ export default function Navbar({ isScrolled = false }: NavbarProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleLogout = () => {
-    logout()
-    setIsDropdownOpen(false)
-    window.location.href = '/'
+  const handleLogout = async () => {
+    try {
+      await logout()
+      setIsDropdownOpen(false)
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Even if logout fails, redirect to home
+      setIsDropdownOpen(false)
+      window.location.href = '/'
+    }
   }
 
   return (

@@ -28,6 +28,7 @@ import { DoctorDashboardStats, Appointment, Prescription, Patient } from '@/type
 import { doctorsAPI } from '@/lib/api'
 import { useAuth } from '@/hooks/useAuth'
 import UserAvatar from '@/components/UserAvatar'
+import SraCosLogo from '@/components/SraCosLogo'
 
 export default function DoctorDashboard() {
   const [stats, setStats] = useState<DoctorDashboardStats | null>(null)
@@ -43,10 +44,14 @@ export default function DoctorDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
-      const [appointments, patients] = await Promise.all([
+      const [appointmentsResult, patientsResult] = await Promise.all([
         doctorsAPI.getAppointments() as Promise<Appointment[]>,
         doctorsAPI.getPatients() as Promise<Patient[]>
       ])
+
+      // Ensure we have arrays
+      const appointments = Array.isArray(appointmentsResult) ? appointmentsResult : []
+      const patients = Array.isArray(patientsResult) ? patientsResult : []
 
       const todayAppointments = appointments.filter(a => 
         new Date(a.date).toDateString() === new Date().toDateString()
@@ -82,9 +87,16 @@ export default function DoctorDashboard() {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    router.push('/auth/login')
+  const handleLogout = async () => {
+    try {
+      // Use the logout function from useAuth which calls backend API
+      await logout()
+      router.push('/auth/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Even if logout fails, redirect to login
+      router.push('/auth/login')
+    }
   }
 
   if (loading) {
@@ -122,10 +134,7 @@ export default function DoctorDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2">
-                <Heart className="w-8 h-8 text-green-600" />
-                <span className="text-2xl font-bold text-gray-900">SRACOS</span>
-              </Link>
+             <SraCosLogo size="lg" showText={true} />
             </div>
             <nav className="hidden md:flex items-center space-x-8">
               <Link href="/dashboard/doctor/appointments" className="flex items-center text-gray-600 hover:text-green-600">
