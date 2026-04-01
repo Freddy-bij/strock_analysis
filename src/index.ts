@@ -8,6 +8,8 @@ import strokeRiskRoutes from './routes/strokeRisk';
 import userRoutes from './routes/users';
 import doctorRoutes from './routes/doctors';
 import appointmentRoutes from './routes/appointments';
+import predictionRoutes from './routes/predictionRoutes';
+import { seedAdmin } from './seeders/adminSeeder';
 
 dotenv.config();
 
@@ -20,6 +22,10 @@ app.use(cors({
   credentials: true
 }));
 
+// Body parsing middleware (must be before logging to capture body)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path} - ${new Date().toISOString()}`);
@@ -28,11 +34,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 // Database connection
-connectDB();
+connectDB().then(() => {
+  // Seed admin user after DB connection
+  seedAdmin();
+});
 
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
@@ -43,6 +49,7 @@ app.use('/api/stroke-risk', strokeRiskRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/predictions', predictionRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

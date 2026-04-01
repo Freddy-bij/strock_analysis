@@ -12,7 +12,7 @@ export interface IUser extends Document {
   address?: string;
   emergencyContact?: string;
   emergencyPhone?: string;
-  userType: 'patient' | 'doctor';
+  userType: 'patient' | 'doctor' | 'admin';
   specialization?: string;
   licenseNumber?: string;
   experience?: number;
@@ -20,6 +20,7 @@ export interface IUser extends Document {
   certifications?: string[];
   consultationFee?: number;
   rating?: number;
+  adminRole?: string;
   status: 'active' | 'inactive';
   createdAt: Date;
   updatedAt: Date;
@@ -76,7 +77,7 @@ const userSchema = new Schema<IUser>({
   userType: {
     type: String,
     required: true,
-    enum: ['patient', 'doctor']
+    enum: ['patient', 'doctor', 'admin']
   },
   specialization: {
     type: String,
@@ -88,6 +89,14 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: function(this: IUser) {
       return this.userType === 'doctor';
+    }
+  },
+  adminRole: {
+    type: String,
+    enum: ['super', 'moderator'],
+    default: 'moderator',
+    required: function(this: IUser) {
+      return this.userType === 'admin';
     }
   },
   experience: {
