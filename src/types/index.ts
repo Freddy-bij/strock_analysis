@@ -47,7 +47,7 @@ export interface Appointment {
   status: 'scheduled' | 'confirmed' | 'in-progress' | 'completed' | 'cancelled'
   reason: string
   notes?: string
-  consultationType: 'in-person' | 'video'
+  consultationType: 'in-person' | 'video' | 'chat'
   createdAt: string
   updatedAt: string
   patient?: Patient
@@ -266,7 +266,7 @@ export interface AppointmentBookingForm {
   date: string
   time: string
   reason: string
-  consultationType: 'in-person' | 'video'
+  consultationType: 'in-person' | 'video' | 'chat'
   notes?: string
 }
 

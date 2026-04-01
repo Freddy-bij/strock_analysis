@@ -15,7 +15,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
-  Filter
+  Filter,
+  MessageCircle
 } from 'lucide-react'
 import { Doctor, TimeSlot, AppointmentBookingForm } from '@/types'
 import { useAuth } from '@/hooks/useAuth'
@@ -430,7 +431,7 @@ export default function BookAppointment() {
               {/* Consultation Type */}
               <div className="bg-white p-6 rounded-lg shadow-sm border">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Consultation Type</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <label className="relative">
                     <input
                       type="radio"
@@ -466,7 +467,26 @@ export default function BookAppointment() {
                     }`}>
                       <Video className="w-6 h-6 mb-2" />
                       <p className="font-medium">Video Call</p>
-                      <p className="text-sm text-gray-600">Online consultation</p>
+                      <p className="text-sm text-gray-600">Online video</p>
+                    </div>
+                  </label>
+                  <label className="relative">
+                    <input
+                      type="radio"
+                      name="consultationType"
+                      value="chat"
+                      checked={formData.consultationType === 'chat'}
+                      onChange={(e) => setFormData(prev => ({ ...prev, consultationType: 'chat' }))}
+                      className="sr-only text-gray-500"
+                    />
+                    <div className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                      formData.consultationType === 'chat' 
+                        ? 'border-green-500 bg-green-50' 
+                        : 'border-gray-300'
+                    }`}>
+                      <MessageCircle className="w-6 h-6 mb-2" />
+                      <p className="font-medium">Chat</p>
+                      <p className="text-sm text-gray-600">Text consultation</p>
                     </div>
                   </label>
                 </div>

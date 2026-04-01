@@ -20,7 +20,8 @@ import {
   Stethoscope,
   ChevronRight,
   LogOut,
-  AlertTriangle
+  AlertTriangle,
+  Brain
 } from 'lucide-react'
 import { PatientDashboardStats, Appointment, Prescription, MedicalRecord } from '@/types'
 import { patientsAPI, authAPI } from '@/lib/api'
@@ -462,6 +463,13 @@ export default function PatientDashboard() {
             >
               <Activity className="w-6 h-6 mb-2" />
               <p className="font-medium">Stroke Risk Test</p>
+            </Link>
+            <Link 
+              href="/stroke-risk/ai-prediction"
+              className="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-white hover:bg-opacity-30 transition-colors"
+            >
+              <Brain className="w-6 h-6 mb-2" />
+              <p className="font-medium">AI Prediction</p>
             </Link>
             <Link 
               href="/dashboard/patient/records"

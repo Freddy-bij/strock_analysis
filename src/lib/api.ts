@@ -125,15 +125,10 @@ export const patientsAPI = {
       const response = await api.get('/appointments/patient')
       console.log('Raw axios response:', response)
       console.log('Response data:', response.data)
-      console.log('Response data type:', typeof response.data)
-      console.log('Response data isArray:', Array.isArray(response.data))
-      console.log('Response isArray:', Array.isArray(response))
       
-      // Handle both direct array and wrapped response formats
-      const appointments = Array.isArray(response.data) ? response.data : response.data || []
-      console.log('Final appointments result:', appointments)
-      console.log('Final appointments type:', typeof appointments)
-      console.log('Final appointments isArray:', Array.isArray(appointments))
+      // API returns { success: true, data: [...], pagination: {...} }
+      const appointments = response.data?.data || []
+      console.log('Extracted appointments:', appointments)
       
       return appointments
     } catch (error) {
@@ -667,6 +662,41 @@ export const diagnosisAPI = {
   getDiagnosisHistory: async (patientId?: string) => {
     const url = patientId ? `/diagnosis/history?patientId=${patientId}` : '/diagnosis/history'
     const response = await api.get(url)
+    return response.data
+  },
+}
+
+// AI Stroke Prediction API
+export const predictionsAPI = {
+  trainModel: async () => {
+    const response = await api.post('/predictions/train')
+    return response.data
+  },
+
+  getModelStatus: async () => {
+    const response = await api.get('/predictions/status')
+    return response.data
+  },
+
+  predictStroke: async (data: {
+    age: number
+    gender: 'Male' | 'Female' | 'Other'
+    hypertension: boolean
+    heart_disease: boolean
+    ever_married: boolean
+    work_type: 'Private' | 'Self-employed' | 'Govt_job' | 'children' | 'Never_worked'
+    residence_type: 'Urban' | 'Rural'
+    avg_glucose_level: number
+    bmi: number
+    smoking_status: 'never' | 'formerly' | 'current' | 'unknown'
+    userId?: string
+  }) => {
+    const response = await api.post('/predictions/predict', data)
+    return response.data
+  },
+
+  getPredictionHistory: async (userId: string) => {
+    const response = await api.get(`/predictions/history/${userId}`)
     return response.data
   },
 }
