@@ -45,15 +45,27 @@ export default function DoctorDashboard() {
     try {
       setLoading(true)
       const [appointmentsResult, patientsResult] = await Promise.all([
-        doctorsAPI.getAppointments() as Promise<Appointment[]>,
-        doctorsAPI.getPatients() as Promise<Patient[]>
+        doctorsAPI.getAppointments() as any,
+        doctorsAPI.getPatients() as any
       ])
 
-      // Ensure we have arrays
-      const appointments = Array.isArray(appointmentsResult) ? appointmentsResult : []
-      const patients = Array.isArray(patientsResult) ? patientsResult : []
+      // Handle appointments API response
+      let appointments = []
+      if (appointmentsResult && appointmentsResult.success && Array.isArray(appointmentsResult.data)) {
+        appointments = appointmentsResult.data
+      } else {
+        console.warn('Invalid appointments API response:', appointmentsResult)
+      }
 
-      const todayAppointments = appointments.filter(a => 
+      // Handle patients API response
+      let patients = []
+      if (patientsResult && patientsResult.success && Array.isArray(patientsResult.data)) {
+        patients = patientsResult.data
+      } else {
+        console.warn('Invalid patients API response:', patientsResult)
+      }
+
+      const todayAppointments = appointments.filter((a: Appointment) => 
         new Date(a.date).toDateString() === new Date().toDateString()
       )
 
@@ -65,17 +77,17 @@ export default function DoctorDashboard() {
         averageRating: 4.8, // This would come from API
         earnings: {
           today: todayAppointments.length * 150,
-          week: appointments.filter(a => {
-            const appointmentDate = new Date(a.date)
+          week: appointments.filter((appointment: Appointment) => {
+            const appointmentDate = new Date(appointment.date)
             const weekAgo = new Date()
             weekAgo.setDate(weekAgo.getDate() - 7)
-            return appointmentDate >= weekAgo && a.status === 'completed'
+            return appointmentDate >= weekAgo && appointment.status === 'completed'
           }).length * 150,
-          month: appointments.filter(a => {
-            const appointmentDate = new Date(a.date)
+          month: appointments.filter((appointment: Appointment) => {
+            const appointmentDate = new Date(appointment.date)
             const monthAgo = new Date()
             monthAgo.setMonth(monthAgo.getMonth() - 1)
-            return appointmentDate >= monthAgo && a.status === 'completed'
+            return appointmentDate >= monthAgo && appointment.status === 'completed'
           }).length * 150
         }
       })

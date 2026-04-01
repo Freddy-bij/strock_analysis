@@ -573,6 +573,19 @@ export const appointmentsAPI = {
     return response.data
   },
   
+  createAppointment: async (appointmentData: {
+    doctorId: string
+    date: string
+    time: string
+    reason: string
+    duration?: number
+    type?: string
+    notes?: string
+  }) => {
+    const response = await api.post('/appointments', appointmentData)
+    return response.data
+  },
+  
   rescheduleAppointment: async (appointmentId: string, newDate: string, newTime: string) => {
     const response = await api.put(`/appointments/${appointmentId}/reschedule`, { newDate, newTime })
     return response.data

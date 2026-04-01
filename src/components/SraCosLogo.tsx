@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import React from 'react'
 
 interface SraCosLogoProps {
@@ -110,9 +111,12 @@ export default function SraCosLogo({
       </svg>
       
       {showText && (
+       <Link href="/">
         <span className={`${textSizes[size]} font-bold`} style={{ color: primaryColor }}>
           SraCos
         </span>
+       </Link>
+      
       )}
     </div>
   )
