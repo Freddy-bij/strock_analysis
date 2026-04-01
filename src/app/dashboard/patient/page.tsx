@@ -150,13 +150,17 @@ export default function PatientDashboard() {
           
           if (response.ok) {
             const strokeRiskResults = await response.json()
-            const results = JSON.parse(strokeRiskResults)
-            setStrokeRiskData({
-              riskScore: results.riskScore,
-              riskLevel: results.riskLevel,
-              lastAssessmentDate: results.assessmentDate,
-              recommendations: results.recommendations
-            })
+            console.log('Stroke risk API response:', strokeRiskResults)
+            
+            if (strokeRiskResults.success && strokeRiskResults.data) {
+              const results = strokeRiskResults.data
+              setStrokeRiskData({
+                riskScore: results.riskScore,
+                riskLevel: results.riskLevel,
+                lastAssessmentDate: results.assessmentDate,
+                recommendations: results.recommendations
+              })
+            }
           }
         }
       } catch (strokeError) {

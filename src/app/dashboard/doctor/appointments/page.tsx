@@ -32,9 +32,28 @@ export default function DoctorAppointmentsPage() {
   const fetchAppointments = async () => {
     try {
       setLoading(true)
-      const data = await doctorsAPI.getAppointments() as Appointment[]
-      const appointmentsArray = Array.isArray(data) ? data : []
-      setAppointments(appointmentsArray)
+      const result = await doctorsAPI.getAppointments() as any
+      console.log('Doctor appointments API response:', result)
+      
+      // Handle both direct array and wrapped response formats
+      let appointmentsData = []
+      if (Array.isArray(result)) {
+        appointmentsData = result
+      } else if (result && result.success && Array.isArray(result.data)) {
+        appointmentsData = result.data
+      } else if (result && Array.isArray(result.data)) {
+        appointmentsData = result.data
+      }
+      
+      console.log('Processed appointments data:', appointmentsData)
+      
+      // Ensure each appointment has a unique ID
+      const processedAppointments = appointmentsData.map((apt: any, index: number) => ({
+        ...apt,
+        id: apt.id || apt._id || `appointment-${index}-${Date.now()}`
+      }))
+      
+      setAppointments(processedAppointments)
     } catch (error) {
       setError('Failed to load appointments')
       console.error('Error fetching appointments:', error)

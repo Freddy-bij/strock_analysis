@@ -31,6 +31,7 @@ export default function BookAppointment() {
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
   const [loading, setLoading] = useState(false)
+  const [doctorsLoading, setDoctorsLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [specialization, setSpecialization] = useState('')
   const { user } = useAuth()
@@ -59,9 +60,12 @@ export default function BookAppointment() {
   useEffect(() => {
     // Fetch real doctors from API
     const fetchDoctors = async () => {
+      setDoctorsLoading(true)
       try {
         const result = await doctorsAPI.getAllDoctors() as any
-        if (result.success && result.data) {
+        console.log('Doctors API response:', result)
+        
+        if (result && result.success && Array.isArray(result.data)) {
           // Transform backend data to match frontend Doctor interface
           const transformedDoctors = result.data.map((doctor: any) => ({
             id: doctor._id,
@@ -84,6 +88,52 @@ export default function BookAppointment() {
             updatedAt: doctor.updatedAt || '2024-01-01'
           }))
           setDoctors(transformedDoctors)
+        } else {
+          console.warn('Invalid doctors API response:', result)
+          // Fallback to mock data if API fails
+          const mockDoctors: Doctor[] = [
+            {
+              id: '1',
+              firstName: 'John',
+              lastName: 'Smith',
+              email: 'john.smith@example.com',
+              phone: '+1234567890',
+              dateOfBirth: '1980-01-01',
+              role: 'doctor',
+              status: 'active',
+              specialization: 'Neurology',
+              licenseNumber: 'MD123456',
+              experience: 15,
+              education: ['Harvard Medical School'],
+              certifications: ['Board Certified Neurologist', 'Stroke Specialist'],
+              consultationFee: 150,
+              rating: 4.8,
+              availableSlots: [],
+              createdAt: '2020-01-01',
+              updatedAt: '2024-01-01'
+            },
+            {
+              id: '2',
+              firstName: 'Sarah',
+              lastName: 'Johnson',
+              email: 'sarah.johnson@example.com',
+              phone: '+1234567891',
+              dateOfBirth: '1982-05-15',
+              role: 'doctor',
+              status: 'active',
+              specialization: 'Stroke Medicine',
+              licenseNumber: 'MD789012',
+              experience: 12,
+              education: ['Johns Hopkins School of Medicine'],
+              certifications: ['Board Certified Stroke Specialist'],
+              consultationFee: 175,
+              rating: 4.9,
+              availableSlots: [],
+              createdAt: '2020-01-01',
+              updatedAt: '2024-01-01'
+            }
+          ]
+          setDoctors(mockDoctors)
         }
       } catch (error) {
         console.error('Failed to fetch doctors:', error)
@@ -131,6 +181,8 @@ export default function BookAppointment() {
           }
         ]
         setDoctors(mockDoctors)
+      } finally {
+        setDoctorsLoading(false)
       }
     }
 
@@ -148,7 +200,37 @@ export default function BookAppointment() {
 
     setLoading(true)
     try {
-      // Mock available slots
+      console.log('Fetching available slots for doctor:', selectedDoctor.id, 'on date:', selectedDate)
+      const slotsData = await appointmentsAPI.getAvailableSlots(selectedDoctor.id, selectedDate) as any
+      console.log('Available slots response:', slotsData)
+      
+      if (slotsData && slotsData.success && Array.isArray(slotsData.data)) {
+        const transformedSlots = slotsData.data.map((slot: string, index: number) => ({
+          id: (index + 1).toString(),
+          startTime: slot,
+          endTime: getNextTimeSlot(slot),
+          available: true
+        }))
+        setAvailableSlots(transformedSlots)
+      } else {
+        // Fallback to mock slots if API fails or returns unexpected data
+        const mockSlots: TimeSlot[] = [
+          { id: '1', startTime: '09:00', endTime: '09:30', available: true },
+          { id: '2', startTime: '09:30', endTime: '10:00', available: true },
+          { id: '3', startTime: '10:00', endTime: '10:30', available: false },
+          { id: '4', startTime: '10:30', endTime: '11:00', available: true },
+          { id: '5', startTime: '11:00', endTime: '11:30', available: true },
+          { id: '6', startTime: '11:30', endTime: '12:00', available: false },
+          { id: '7', startTime: '14:00', endTime: '14:30', available: true },
+          { id: '8', startTime: '14:30', endTime: '15:00', available: true },
+          { id: '9', startTime: '15:00', endTime: '15:30', available: true },
+          { id: '10', startTime: '15:30', endTime: '16:00', available: false }
+        ]
+        setAvailableSlots(mockSlots)
+      }
+    } catch (error) {
+      console.error('Error fetching available slots:', error)
+      // Fallback to mock slots on error
       const mockSlots: TimeSlot[] = [
         { id: '1', startTime: '09:00', endTime: '09:30', available: true },
         { id: '2', startTime: '09:30', endTime: '10:00', available: true },
@@ -162,11 +244,17 @@ export default function BookAppointment() {
         { id: '10', startTime: '15:30', endTime: '16:00', available: false }
       ]
       setAvailableSlots(mockSlots)
-    } catch (error) {
-      console.error('Error fetching available slots:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const getNextTimeSlot = (currentTime: string): string => {
+    const [hours, minutes] = currentTime.split(':').map(Number)
+    const totalMinutes = hours * 60 + minutes + 30
+    const newHours = Math.floor(totalMinutes / 60)
+    const newMinutes = totalMinutes % 60
+    return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`
   }
 
   const filteredDoctors = doctors.filter(doctor => {
@@ -197,10 +285,27 @@ export default function BookAppointment() {
     setLoading(true)
 
     try {
-      await patientsAPI.bookAppointment(formData)
-      router.push('/dashboard/patient/appointments?success=true')
+      console.log('Submitting appointment booking:', formData)
+      const result = await appointmentsAPI.createAppointment({
+        doctorId: formData.doctorId,
+        date: formData.date,
+        time: formData.time,
+        duration: 30,
+        type: formData.consultationType,
+        notes: formData.notes,
+        reason: formData.reason
+      }) as any
+      console.log('Booking result:', result)
+      
+      if (result && result.success) {
+        router.push('/dashboard/patient/appointments?success=true')
+      } else {
+        console.error('Booking failed:', result)
+        alert('Failed to book appointment. Please try again.')
+      }
     } catch (error) {
       console.error('Error booking appointment:', error)
+      alert('Failed to book appointment. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -296,37 +401,44 @@ export default function BookAppointment() {
 
             {/* Doctor List */}
             <div className="space-y-4">
-              {filteredDoctors.map((doctor) => (
-                <div key={doctor.id} className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer"
-                     onClick={() => handleDoctorSelect(doctor)}>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Dr. {doctor.firstName} {doctor.lastName}
-                        </h3>
-                        <p className="text-gray-600">{doctor.specialization}</p>
-                        <div className="flex items-center mt-2 space-x-4">
-                          <div className="flex items-center">
-                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                            <span className="text-sm text-gray-600 ml-1">{doctor.rating}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <DollarSign className="w-4 h-4 text-gray-400" />
-                            <span className="text-sm text-gray-600 ml-1">${doctor.consultationFee}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Stethoscope className="w-4 h-4 text-gray-400" />
-                            <span className="text-sm text-gray-600 ml-1">{doctor.experience} years</span>
+              {doctorsLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading doctors...</p>
+                </div>
+              ) : (
+                filteredDoctors.map((doctor) => (
+                  <div key={doctor.id} className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer"
+                         onClick={() => handleDoctorSelect(doctor)}>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            Dr. {doctor.firstName} {doctor.lastName}
+                          </h3>
+                          <p className="text-gray-600">{doctor.specialization}</p>
+                          <div className="flex items-center mt-2 space-x-4">
+                            <div className="flex items-center">
+                              <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                              <span className="text-sm text-gray-600 ml-1">{doctor.rating}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <DollarSign className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm text-gray-600 ml-1">${doctor.consultationFee}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <Stethoscope className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm text-gray-600 ml-1">{doctor.experience} years</span>
+                            </div>
                           </div>
                         </div>
                       </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         )}
