@@ -141,10 +141,10 @@ export const patientsAPI = {
       console.log('Error details:', error)
       return [
         {
-          id: '1',
-          date: '2024-04-02',
+          id: 'apt-1',
+          date: '2026-04-30',
           time: '14:00',
-          status: 'confirmed',
+          status: 'scheduled',
           reason: 'Regular checkup',
           consultationType: 'in-person',
           doctor: {
@@ -155,8 +155,8 @@ export const patientsAPI = {
           }
         },
         {
-          id: '2',
-          date: '2024-04-05',
+          id: 'apt-2',
+          date: '2026-04-18',
           time: '10:00',
           status: 'scheduled',
           reason: 'Follow-up consultation',
@@ -586,12 +586,26 @@ export const appointmentsAPI = {
     return response.data
   },
   
+  processPayment: async (appointmentId: string, paymentData: {
+    paymentType: 'appointment' | 'assessment'
+    amount: number
+  }) => {
+    const response = await api.post(`/appointments/${appointmentId}/payment`, paymentData)
+    return response.data
+  },
+  
+  updateAppointmentStatus: async (appointmentId: string, status: string, notes?: string) => {
+    const response = await api.put(`/appointments/${appointmentId}/status`, { status, notes })
+    return response.data
+  },
+  
   rescheduleAppointment: async (appointmentId: string, newDate: string, newTime: string) => {
     const response = await api.put(`/appointments/${appointmentId}/reschedule`, { newDate, newTime })
     return response.data
   },
 }
 
+// ... (rest of the code remains the same)
 // Prescriptions API
 export const prescriptionsAPI = {
   getPrescriptionDetails: async (prescriptionId: string) => {

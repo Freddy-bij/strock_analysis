@@ -36,9 +36,32 @@ export default function PatientAppointmentsPage() {
   const fetchAppointments = async () => {
     try {
       setLoading(true)
-      const data = await patientsAPI.getAppointments() as Appointment[]
-      const appointmentsArray = Array.isArray(data) ? data : []
-      setAppointments(appointmentsArray)
+      const data = await patientsAPI.getAppointments() as any
+      
+      // Handle both direct array and wrapped response formats
+      let appointmentsArray: any[] = []
+      if (data && data.success && Array.isArray(data.data)) {
+        appointmentsArray = data.data
+      } else if (Array.isArray(data)) {
+        appointmentsArray = data
+      }
+      
+      console.log('=== PATIENT APPOINTMENTS DEBUG ===')
+      console.log('Raw API data:', data)
+      console.log('Appointments array length:', appointmentsArray.length)
+      console.log('All appointments:', appointmentsArray)
+      
+      // Only show confirmed/approved appointments by default
+      const approvedAppointments = appointmentsArray.filter((apt: any) => {
+        const isApproved = apt.status === 'confirmed' || apt.status === 'in-progress' || apt.status === 'completed'
+        console.log(`Appointment ${apt.id}: status="${apt.status}", approved=${isApproved}`)
+        return isApproved
+      })
+      
+      console.log('Approved appointments count:', approvedAppointments.length)
+      console.log('Approved appointments:', approvedAppointments)
+      
+      setAppointments(approvedAppointments)
     } catch (error) {
       setError('Failed to load appointments')
       console.error('Error fetching appointments:', error)
@@ -146,12 +169,10 @@ export default function PatientAppointmentsPage() {
                 onChange={(e) => setFilterStatus(e.target.value)}
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 text-gray-500 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none"
               >
-                <option value="all">All Status</option>
-                <option value="scheduled">Scheduled</option>
+                <option value="all">All Approved</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="in-progress">In Progress</option>
                 <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
               </select>
             </div>
 

@@ -44,10 +44,17 @@ export interface Appointment {
   date: string
   time: string
   duration: number
-  status: 'scheduled' | 'confirmed' | 'in-progress' | 'completed' | 'cancelled'
+  status: 'pending' | 'scheduled' | 'confirmed' | 'in-progress' | 'completed' | 'cancelled' | 'no-show'
   reason: string
   notes?: string
   consultationType: 'in-person' | 'video'
+  type: 'consultation' | 'follow-up' | 'emergency' | 'stroke-risk-assessment'
+  appointmentFee?: number
+  assessmentFee?: number
+  totalFee?: number
+  appointmentFeePaid: boolean
+  assessmentFeePaid: boolean
+  paymentStatus: 'pending' | 'partial' | 'paid' | 'refunded'
   createdAt: string
   updatedAt: string
   patient?: Patient

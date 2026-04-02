@@ -70,15 +70,30 @@ export default function DoctorAppointmentsPage() {
 
   const updateAppointmentStatus = async (appointmentId: string, newStatus: 'scheduled' | 'confirmed' | 'in-progress' | 'completed' | 'cancelled') => {
     try {
+      console.log(`Updating appointment ${appointmentId} to status: ${newStatus}`)
       await doctorsAPI.updateAppointment(appointmentId, newStatus)
+      
+      // Update local state immediately since API might be in mock mode
       setAppointments(prev => 
         prev.map(apt => 
-          apt.id === appointmentId ? { ...apt, status: newStatus } : apt
+          apt.id === appointmentId 
+            ? { ...apt, status: newStatus, updatedAt: new Date().toISOString() }
+            : apt
         )
       )
+      
+      // Store the updated appointment in localStorage so patient can see it
+      const updatedAppointment = {
+        id: appointmentId,
+        status: newStatus,
+        updatedAt: new Date().toISOString()
+      }
+      localStorage.setItem(`appointment-${appointmentId}`, JSON.stringify(updatedAppointment))
+      console.log(`Successfully updated appointment ${appointmentId} to ${newStatus}`)
+      console.log(`Stored in localStorage for patient to see`)
+      
     } catch (error) {
-      setError('Failed to update appointment')
-      console.error('Error updating appointment:', error)
+      console.error('Failed to update appointment status:', error)
     }
   }
 

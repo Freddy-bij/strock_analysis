@@ -211,16 +211,16 @@ export default function LoginPage() {
       console.error('Login error:', err)
       setError('Login failed. Please check your connection and try again.')
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
-    }))
-  }
+    }));
+  };
 
   return (
     <div className="min-h-screen flex bg-gray-100">
@@ -238,8 +238,7 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-center items-center text-white px-12 text-center w-full">
 
           {/* Illustration */}
-         
-          <div className=" w-full flex justify-center">
+          <div className="mb-8">
             <MedicalIllustration />
           </div>
 
@@ -249,7 +248,7 @@ export default function LoginPage() {
             <p className="text-base opacity-80">Continue your stroke prevention journey</p>
           </div>
 
-          <div className="gap-1 grid  grid-cols-3 w-full">
+          <div className="gap-1 grid grid-cols-3 w-full max-w-md">
             <div className="flex items-center space-x-3 bg-white/10 rounded-xl px-4 py-3">
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shrink-0">
                 <User className="w-4 h-4" />

@@ -298,7 +298,7 @@ export default function SignupPage() {
           </div>
 
           {/* Illustration */}
-          <div className="w-full flex justify-center mb-6">
+          <div className="mb-8">
             <SignupIllustration />
           </div>
 

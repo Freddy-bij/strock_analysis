@@ -97,13 +97,62 @@ export default function PatientDashboard() {
           console.log('Appointments result does NOT have filter method')
         }
         
-        // Ensure we have an array
-        const appointmentsArray = Array.isArray(appointmentsResult) ? appointmentsResult : []
+        // Ensure we have an array and filter for confirmed/approved appointments only
+        let appointmentsArray: any[] = []
+        if (appointmentsResult && (appointmentsResult as any).success && Array.isArray((appointmentsResult as any).data)) {
+          appointmentsArray = (appointmentsResult as any).data
+        } else if (Array.isArray(appointmentsResult)) {
+          appointmentsArray = appointmentsResult
+        }
         
-        // Update with safe appointments data
+        console.log('=== APPOINTMENTS DEBUG ===')
+        console.log('Total appointments:', appointmentsArray.length)
+        console.log('All appointments:', appointmentsArray)
+        
+        // Log each appointment's structure to understand the data
+        appointmentsArray.forEach((apt: any, index: number) => {
+          console.log(`Appointment ${index} structure:`, apt)
+          console.log(`  - Keys: ${Object.keys(apt)}`)
+          console.log(`  - id: ${apt.id}`)
+          console.log(`  - _id: ${apt._id}`)
+          console.log(`  - appointmentId: ${apt.appointmentId}`)
+        })
+        
+        // Filter for confirmed/approved appointments only
+        const confirmedAppointments = appointmentsArray.filter((apt: any) => {
+          // Check if there's a localStorage update for this appointment
+          const localStorageUpdate = localStorage.getItem(`appointment-${apt.id}`)
+          if (localStorageUpdate) {
+            const update = JSON.parse(localStorageUpdate)
+            apt.status = update.status // Update the status from localStorage
+            console.log(`Found localStorage update for appointment ${apt.id}: ${update.status}`)
+          }
+          
+          const isApproved = apt.status === 'confirmed' || apt.status === 'in-progress' || apt.status === 'completed'
+          const appointmentDate = new Date(apt.date)
+          const today = new Date()
+          today.setHours(0, 0, 0, 0)
+          const isUpcoming = appointmentDate >= today
+          
+          console.log(`Appointment ${apt.id}:`)
+          console.log(`  - status: ${apt.status}`)
+          console.log(`  - date: ${apt.date}`)
+          console.log(`  - appointmentDate: ${appointmentDate}`)
+          console.log(`  - today: ${today}`)
+          console.log(`  - isApproved: ${isApproved}`)
+          console.log(`  - isUpcoming: ${isUpcoming}`)
+          console.log(`  - will show: ${isApproved && isUpcoming}`)
+          
+          return isApproved && isUpcoming
+        })
+        
+        console.log('Confirmed appointments:', confirmedAppointments.length)
+        console.log('Confirmed appointments details:', confirmedAppointments)
+        
+        // Update with safe appointments data (only confirmed ones)
         setStats(prev => prev ? {
           ...prev,
-          upcomingAppointments: appointmentsArray.slice(0, 3) as unknown as Appointment[]
+          upcomingAppointments: confirmedAppointments.slice(0, 3) as unknown as Appointment[]
         } : safeData)
         
       } catch (apiError) {
